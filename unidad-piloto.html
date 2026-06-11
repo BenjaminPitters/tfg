@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U1 · Hello, my world! · Unidad Didáctica Piloto · TFG Benjamín Pitters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F6F2; --surface: #FFFFFF; --surface2: #F0EFE9;
+  --text: #1C1C28; --text2: #5C5C72; --text3: #9898B0;
+  --border: rgba(28,28,40,0.09);
+  --n1: #534AB7; --n1l: #EEEDFE; --n1t: #3C3489;
+  --n2: #0F6E56; --n2l: #E1F5EE; --n2t: #085041;
+  --n3: #185FA5; --n3l: #E6F1FB; --n3t: #0C447C;
+  --accent: #C9A84C;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+  --radius: 12px;
+  --shadow: 0 2px 16px rgba(28,28,40,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+
+/* ── TOP NAV ─────────────────────────────────────────────────────── */
+#topnav{
+  position:sticky;top:0;z-index:100;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0;
+  padding:0;
+  box-shadow:0 1px 12px rgba(28,28,40,0.07);
+}
+.back-link{
+  padding:14px 20px;
+  text-decoration:none;font-size:12px;color:var(--text2);
+  border-right:1px solid var(--border);
+  white-space:nowrap;transition:color 0.2s;display:flex;align-items:center;gap:6px;
+}
+.back-link:hover{color:var(--text)}
+.nav-tabs{display:flex;overflow-x:auto;flex:1;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.tab-btn{
+  padding:14px 22px;font-size:12.5px;font-weight:400;color:var(--text2);
+  border:none;background:none;cursor:pointer;
+  white-space:nowrap;border-bottom:2.5px solid transparent;
+  transition:all 0.2s;font-family:var(--sans);
+}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--n1);border-bottom-color:var(--n1);font-weight:500}
+
+/* ── HERO ─────────────────────────────────────────────────────────── */
+#hero{
+  background:var(--text);color:white;
+  padding:64px 80px 56px;
+  position:relative;overflow:hidden;
+}
+#hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 500px 400px at 85% 30%,rgba(83,74,183,0.35),transparent),
+    radial-gradient(ellipse 300px 300px at 15% 80%,rgba(15,110,86,0.2),transparent);
+  pointer-events:none;
+}
+.hero-meta{position:relative;display:flex;flex-wrap:wrap;gap:24px;margin-bottom:20px}
+.hero-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  padding:4px 12px;border-radius:100px;
+  background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);
+}
+.hero-chip.n1{background:rgba(83,74,183,0.35);color:#CECBF6}
+.hero-title{
+  font-family:var(--serif);font-size:clamp(28px,4vw,52px);
+  font-weight:600;line-height:1.1;margin-bottom:12px;position:relative;
+}
+.hero-sub{font-size:15px;color:rgba(255,255,255,0.55);position:relative;font-weight:300}
+.hero-badges{
+  display:flex;flex-wrap:wrap;gap:8px;position:relative;margin-top:24px;
+}
+.hb{
+  padding:5px 14px;border-radius:100px;font-size:11px;
+  border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.65);
+  background:rgba(255,255,255,0.06);
+}
+
+/* ── CONTENT PANELS ──────────────────────────────────────────────── */
+.panel{display:none;padding:64px 80px;max-width:1100px}
+.panel.active{display:block}
+
+.panel-title{
+  font-family:var(--serif);font-size:28px;font-weight:600;
+  color:var(--text);margin-bottom:8px;
+}
+.panel-sub{font-size:14px;color:var(--text2);margin-bottom:40px;font-weight:300}
+
+/* ── CANCIÓN ─────────────────────────────────────────────────────── */
+.song-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:0}
+
+.video-frame{
+  background:var(--text);border-radius:var(--radius);
+  aspect-ratio:16/9;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.video-frame iframe{
+  position:absolute;inset:0;width:100%;height:100%;border:none;
+}
+.video-placeholder{
+  text-align:center;color:rgba(255,255,255,0.5);
+  padding:32px;
+}
+.video-placeholder .play-btn{
+  width:64px;height:64px;border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin:0 auto 16px;
+}
+.video-url-input{
+  width:100%;margin-top:12px;
+  padding:10px 14px;border-radius:8px;
+  border:1px solid var(--border);font-family:var(--sans);
+  font-size:12px;color:var(--text2);background:var(--surface);
+}
+
+.lyrics-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px 32px;
+  box-shadow:var(--shadow);
+}
+.lyrics-title{
+  font-family:var(--serif);font-size:18px;font-weight:600;
+  margin-bottom:20px;color:var(--text);
+  display:flex;align-items:center;gap:10px;
+}
+.lyrics-section{margin-bottom:20px}
+.lyrics-label{
+  font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text3);margin-bottom:8px;
+}
+.lyrics-verse{
+  font-family:var(--serif);font-style:italic;
+  font-size:15px;line-height:1.9;color:var(--text);
+  border-left:2px solid var(--n1l);padding-left:16px;
+}
+.lse-note{
+  display:inline-block;font-size:10px;
+  background:var(--n2l);color:var(--n2t);
+  padding:1px 6px;border-radius:4px;margin-left:6px;
+  font-style:normal;font-family:var(--sans);font-weight:500;
+}
+
+.chords-block{
+  margin-top:20px;padding:16px;background:var(--bg);
+  border-radius:8px;border:1px solid var(--border);
+}
+.chords-title{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.chord{
+  display:inline-block;background:var(--n1l);color:var(--n1t);
+  padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;
+  margin:2px;font-family:monospace;
+}
+
+/* ── CUENTO ──────────────────────────────────────────────────────── */
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.story-cover{
+  background:var(--n1l);border-radius:var(--radius);
+  aspect-ratio:4/3;display:flex;align-items:center;
+  justify-content:center;font-size:80px;
+  border:2px dashed rgba(83,74,183,0.2);
+  cursor:pointer;transition:background 0.2s;position:relative;overflow:hidden;
+}
+.story-cover:hover{background:#E2E0FD}
+.story-cover input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;
+}
+.story-cover-label{text-align:center;pointer-events:none}
+.story-cover-label p{font-size:12px;color:var(--n1t);margin-top:8px}
+.story-cover img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius)}
+
+.story-info h3{font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:12px}
+.story-info p{font-size:14px;color:var(--text2);line-height:1.8;font-weight:300;margin-bottom:16px}
+.vocab-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.vocab-word{
+  padding:4px 12px;border-radius:100px;font-size:11.5px;
+  background:var(--n1l);color:var(--n1t);font-weight:500;
+}
+
+/* ── SESIONES ────────────────────────────────────────────────────── */
+.week-selector{
+  display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap;
+}
+.week-btn{
+  padding:8px 20px;border-radius:8px;font-size:12.5px;
+  border:1px solid var(--border);background:var(--surface);
+  cursor:pointer;font-family:var(--sans);color:var(--text2);
+  transition:all 0.2s;font-weight:400;
+}
+.week-btn:hover{border-color:var(--n1);color:var(--n1)}
+.week-btn.active{background:var(--n1l);color:var(--n1t);border-color:var(--n1);font-weight:500}
+
+.week-panel{display:none}
+.week-panel.active{display:block}
+
+.session-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:16px;
+  overflow:hidden;box-shadow:var(--shadow);
+}
+.session-header{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 24px;cursor:pointer;
+  transition:background 0.2s;
+  justify-content:space-between;
+}
+.session-header:hover{background:var(--bg)}
+.session-header-left{display:flex;align-items:center;gap:16px}
+.session-num{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--n1l);color:var(--n1t);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:600;font-size:14px;font-family:var(--serif);
+  flex-shrink:0;
+}
+.session-info h4{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px}
+.session-info p{font-size:12px;color:var(--text2)}
+.session-toggle{font-size:18px;color:var(--text3);transition:transform 0.3s}
+.session-toggle.open{transform:rotate(180deg)}
+
+.session-body{
+  display:none;padding:24px;
+  border-top:1px solid var(--border);background:var(--bg);
+}
+.session-body.open{display:block}
+
+.session-timeline{display:flex;flex-direction:column;gap:12px}
+.timeline-item{
+  display:flex;gap:16px;align-items:flex-start;
+}
+.timeline-time{
+  min-width:60px;font-size:11px;font-weight:600;
+  color:var(--text3);padding-top:3px;text-align:right;
+}
+.timeline-dot{
+  width:10px;height:10px;border-radius:50%;
+  flex-shrink:0;margin-top:5px;
+}
+.timeline-content{flex:1}
+.timeline-title{font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:3px}
+.timeline-desc{font-size:12.5px;color:var(--text2);font-weight:300;line-height:1.6}
+.timeline-tools{
+  display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;
+}
+.tool-pill{
+  font-size:10px;padding:2px 7px;border-radius:4px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text2);font-weight:400;
+}
+
+.session-photos{
+  margin-top:20px;padding-top:20px;
+  border-top:1px solid var(--border);
+}
+.photos-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.photo-slot{
+  aspect-ratio:1;border-radius:8px;border:2px dashed rgba(28,28,40,0.12);
+  background:var(--surface);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;position:relative;overflow:hidden;
+  transition:border-color 0.2s;
+}
+.photo-slot:hover{border-color:var(--n1)}
+.photo-slot input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.photo-slot img{width:100%;height:100%;object-fit:cover;border-radius:6px}
+
+.dua-notes{
+  margin-top:16px;padding:14px 18px;
+  background:var(--n1l);border-radius:8px;
+  font-size:12.5px;color:var(--n1t);line-height:1.6;
+}
+.dua-notes strong{font-weight:600}
+
+/* ── MATERIALES ──────────────────────────────────────────────────── */
+.materials-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.material-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+  display:flex;flex-direction:column;gap:10px;
+  box-shadow:var(--shadow);transition:transform 0.2s,box-shadow 0.2s;
+}
+.material-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(28,28,40,0.1)}
+.material-icon{font-size:28px}
+.material-name{font-size:13.5px;font-weight:500;color:var(--text)}
+.material-desc{font-size:12px;color:var(--text2);font-weight:300;line-height:1.5;flex:1}
+.material-btn{
+  display:inline-block;padding:7px 14px;border-radius:6px;
+  background:var(--n1l);color:var(--n1t);font-size:11.5px;font-weight:500;
+  text-decoration:none;text-align:center;transition:background 0.2s;cursor:pointer;
+  border:none;font-family:var(--sans);
+}
+.material-btn:hover{background:#DDD9FC}
+
+.upload-area{
+  border:2px dashed rgba(28,28,40,0.12);border-radius:10px;
+  padding:32px;text-align:center;margin-top:24px;
+  cursor:pointer;transition:border-color 0.2s;position:relative;
+}
+.upload-area:hover{border-color:var(--n1)}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-area p{font-size:13px;color:var(--text2)}
+
+/* ── EVALUACIÓN ──────────────────────────────────────────────────── */
+.rubric-table{
+  width:100%;border-collapse:collapse;font-size:12px;
+  border-radius:var(--radius);overflow:hidden;
+  border:1px solid var(--border);margin-top:24px;
+}
+.rubric-table th{
+  background:var(--text);color:white;
+  padding:12px 14px;text-align:left;font-size:11px;font-weight:500;
+}
+.rubric-table td{
+  padding:12px 14px;border-bottom:1px solid var(--border);
+  vertical-align:top;font-size:12px;color:var(--text2);line-height:1.5;
+}
+.rubric-table tr:last-child td{border-bottom:none}
+.rubric-table tr:hover td{background:var(--bg)}
+.level-badge{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:10px;font-weight:600;
+}
+.lb-exc{background:#E1F5EE;color:#085041}
+.lb-ad{background:#E6F1FB;color:#0C447C}
+.lb-basic{background:#FEF3C7;color:#92400E}
+.lb-ini{background:#FAECE7;color:#993C1D}
+
+/* ── HEYZINE ─────────────────────────────────────────────────────── */
+.heyzine-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 16px 0;
+  background: var(--n1);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.heyzine-btn:hover { background: var(--n1t); }
+.heyzine-hint {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 6px;
+}
+
+/* En móvil ocultamos el iframe y agrandamos el botón */
+@media(max-width: 800px) {
+  .heyzine-desktop { display: none; }
+  .heyzine-btn { font-size: 16px; padding: 20px 0; margin-top: 0; }
+  .heyzine-hint { font-size: 12px; margin-top: 8px; }
+}
+
+/* ── RUBRIC TABLE WRAPPER ────────────────────────────────────────── */
+.rubric-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────── */
+@media(max-width:800px){
+  #hero { padding: 48px 20px 40px }
+  .hero-title { font-size: clamp(26px, 6vw, 40px) }
+
+  .panel { padding: 32px 16px }
+  .panel-title { font-size: 22px }
+
+  .song-grid, .story-grid { grid-template-columns: 1fr }
+
+  .lyrics-card { padding: 20px 16px }
+  .lyrics-verse { font-size: 14px }
+
+  .back-link { padding: 12px 14px; font-size: 11px }
+  .tab-btn { padding: 12px 16px; font-size: 12px }
+
+  .materials-grid { grid-template-columns: 1fr 1fr }
+
+  .timeline-time { min-width: 46px; font-size: 10px }
+}
+
+@media(max-width:480px){
+  #hero { padding: 40px 16px 32px }
+  .hero-badges { gap: 6px }
+  .hb { font-size: 10px; padding: 4px 10px }
+
+  .panel { padding: 24px 14px }
+
+  .materials-grid { grid-template-columns: 1fr }
+
+  .session-header { padding: 14px 16px; gap: 10px }
+  .session-body { padding: 16px }
+
+  .week-selector { gap: 6px }
+  .week-btn { padding: 7px 14px; font-size: 12px }
+
+  .rubric-table { font-size: 11px }
+  .rubric-table th, .rubric-table td { padding: 10px 10px }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:rgba(28,28,40,0.15);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav id="topnav">
+  <a class="back-link" href="https://benjaminpitters.github.io/tfg">← TFG</a>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab('cancion',this)">🎵 Canción</button>
+    <button class="tab-btn" onclick="showTab('cuento',this)">📖 Cuento</button>
+    <button class="tab-btn" onclick="showTab('sesiones',this)">📅 Sesiones</button>
+    <button class="tab-btn" onclick="showTab('materiales',this)">🗂️ Materiales DUA</button>
+    <button class="tab-btn" onclick="showTab('evaluacion',this)">📊 Evaluación</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-meta">
+    <span class="hero-chip n1">N1 · Acceso · Pre-A1</span>
+    <span class="hero-chip">1.er curso · Trimestre 1</span>
+    <span class="hero-chip">4 semanas · 12 sesiones</span>
+  </div>
+  <h1 class="hero-title">U1 · Hello, my world!</h1>
+  <p class="hero-sub">Unidad Didáctica Piloto · Primer ciclo de Educación Primaria · TFG Benjamín Pitters Ageno</p>
+  <div class="hero-badges">
+    <span class="hb">Saludar y presentarse</span>
+    <span class="hb">Números 1–5</span>
+    <span class="hb">/h/ /aɪ/ /ɛ/ · vocales A-E-I</span>
+    <span class="hb">I'm [name]. · Hello! · Goodbye!</span>
+    <span class="hb">LSE: hello, friend, name</span>
+    <span class="hb">SAACs · TPR · TEACCH</span>
+  </div>
+</section>
+
+<!-- ── PANEL: CANCIÓN ─────────────────────────────────────────────── -->
+<div class="panel active" id="panel-cancion">
+  <h2 class="panel-title">🎵 <em>Hello hello, what's your name?</em></h2>
+  <p class="panel-sub">Canción original compuesta por el autor con guitarra acústica. Integra el vocabulario de U1, los signos de LSE correspondientes y la función comunicativa: saludar, presentarse y despedirse.</p>
+
+  <div class="song-grid">
+    <div style="display:flex;flex-direction:column;gap:24px;">
+
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">🎸 Vídeo 1 · Canción con imágenes y guitarra</div>
+        <div class="video-frame" id="videoFrame">
+          <div class="video-placeholder" id="videoPlaceholder">
+            <div class="play-btn">▶</div>
+            <p style="font-size:13px;font-weight:500;margin-bottom:6px">Interpretación con guitarra</p>
+            <p style="font-size:11px;color:var(--text3)">Con imágenes y vídeos del cuento</p>
+          </div>
+        </div>
+        <input class="video-url-input" id="videoUrl" type="text"
+          placeholder="Pega la URL de YouTube: https://youtu.be/..."
+          oninput="updateVideo(this.value)">
+        <p style="font-size:11px;color:var(--text3);margin-top:5px">El vídeo se incrustará automáticamente al pegar la URL</p>
+      </div>
+
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">🤟 Vídeo 2 · Canción con pictogramas y LSE</div>
+        <div class="video-frame" id="videoFrame2">
+          <div class="video-placeholder" id="videoPlaceholder2">
+            <div class="play-btn">▶</div>
+            <p style="font-size:13px;font-weight:500;margin-bottom:6px">Versión con pictogramas y signos LSE</p>
+            <p style="font-size:11px;color:var(--text3)">Para uso en el aula como apoyo visual</p>
+          </div>
+        </div>
+        <input class="video-url-input" id="videoUrl2" type="text"
+          placeholder="Pega la URL de YouTube: https://youtu.be/..."
+          oninput="updateVideo2(this.value)">
+        <p style="font-size:11px;color:var(--text3);margin-top:5px">El vídeo se incrustará automáticamente al pegar la URL</p>
+      </div>
+
+
+      <div class="chords-block" style="margin-top:20px">
+        <div class="chords-title">Progresión de acordes · Toda la canción</div>
+        <span class="chord">G</span>
+        <span class="chord">C</span>
+        <span class="chord">G</span>
+        <span class="chord">D</span>
+        <p style="font-size:11px;color:var(--text3);margin-top:10px">BPM: 96 · Compás: 4/4 · Tonalidad: Sol mayor · Misma progresión en estrofas y estribillo</p>
+      </div>
+    </div>
+
+    <div class="lyrics-card">
+      <div class="lyrics-title">📝 Letra · <em>Hello hello, what's your name?</em></div>
+
+      <div class="lyrics-section">
+        <div class="lyrics-label">Estrofa 1 (call-and-response)</div>
+        <div class="lyrics-verse">
+          <em>Hello, hello, how are you?</em><span class="lse-note">LSE: hello</span><br>
+          <em>Hello, hello, I'm fine thank you!</em><span class="lse-note">LSE: fine / thank you</span><br>
+          <em>Hello, hello, how are you?</em><br>
+          <em>Hello, hello, I'm fine thank you!</em>
+        </div>
+      </div>
+
+      <div class="lyrics-section">
+        <div class="lyrics-label">Estribillo</div>
+        <div class="lyrics-verse">
+          <em>1, 2, 3, 4, 5 — yes, please, no, thank you</em><span class="lse-note">LSE: números / yes / no / please / thank you</span><br>
+          <em>1, 2, 3, 4, 5 — Hello, hello, goodbye, goodbye</em><span class="lse-note">LSE: hello / goodbye</span>
+        </div>
+      </div>
+
+      <div class="lyrics-section">
+        <div class="lyrics-label">Estrofa 2 (call-and-response)</div>
+        <div class="lyrics-verse">
+          <em>Hello, hello, what's your name?</em><span class="lse-note">LSE: name</span><br>
+          <em>Hello, hello, I'm [nombre]!</em><span class="lse-note">LSE: I'm</span><br>
+          <em>Hello, hello, what's your name?</em><br>
+          <em>Hello, hello, I'm [nombre]!</em>
+        </div>
+      </div>
+
+      <div class="lyrics-section">
+        <div class="lyrics-label">Estribillo (repetir)</div>
+        <div class="lyrics-verse">
+          <em>1, 2, 3, 4, 5 — yes, please, no, thank you</em><br>
+          <em>1, 2, 3, 4, 5 — Hello, hello, goodbye, goodbye</em>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:8px;font-size:11.5px;color:var(--text2)">
+        <strong style="color:var(--n1t)">Nota (call-and-response):</strong> En la estrofa 2, el docente canta <em>"Hello, hello, what's your name?"</em> señalando a un estudiante; ese estudiante responde <em>"I'm [nombre]!"</em> por el canal que prefiera: voz, signo LSE, comunicador o señalando su nombre en el pictograma.
+      </div>
+
+      <div style="margin-top:10px;padding:12px;background:var(--bg);border-radius:8px;font-size:11.5px;color:var(--text2)">
+        <strong style="color:var(--n1t)">Nota DUA:</strong> El alumnado que no puede vocalizar puede señalar pictogramas, usar el comunicador o hacer los signos LSE. Todas las respuestas son válidas.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PANEL: CUENTO ──────────────────────────────────────────────── -->
+<div class="panel" id="panel-cuento">
+  <h2 class="panel-title">📖 Hello, Leo!</h2>
+  <p class="panel-sub">Cuento de la unidad. Contextualiza el vocabulario de saludo, presentación y números en una narrativa emocionalmente significativa para el alumnado de 6–7 años.</p>
+
+  <div class="story-grid">
+    <div>
+      <!-- Iframe visible solo en escritorio -->
+      <div class="heyzine-desktop" style="border-radius:12px;overflow:hidden;position:relative;">
+        <iframe
+          allowfullscreen="allowfullscreen"
+          scrolling="no"
+          src="https://heyzine.com/flip-book/1c5737dd37.html"
+          style="border:none;width:100%;height:500px;display:block;"
+          title="Hello, Leo!">
+        </iframe>
+      </div>
+      <!-- Botón siempre visible, protagonista en móvil -->
+      <a href="https://heyzine.com/flip-book/1c5737dd37.html" target="_blank"
+         class="heyzine-btn">
+        📖 Abrir <em>Hello, Leo!</em> — libro digital interactivo
+      </a>
+      <p class="heyzine-hint">Se abre en una nueva pestaña · Compatible con móvil y ordenador</p>
+    </div>
+
+    <div class="story-info">
+      <h3>Hello, Leo!</h3>
+      <p><strong>Personajes:</strong> Leo (un estudiante nuevo), la maestra y la clase entera.</p>
+      <p>Leo llega por primera vez a su nueva clase. Está nervioso. La maestra le da la bienvenida con un <em>"Hello!"</em> y le pregunta "What's your name?" Leo responde <em>"I'm Leo!"</em> y poco a poco, con la ayuda de la canción y de sus nuevos amigos, aprende los primeros saludos y los números del 1 al 5.</p>
+      <p><strong>Función comunicativa:</strong> El cuento modela las estructuras <em>Hello, I'm [name], Goodbye</em> en contexto narrativo significativo. Cada página tiene 1–2 frases de texto simple, vocabulario visual y un signo LSE destacado.</p>
+
+      <div style="margin-top:20px">
+        <div class="chords-title" style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Vocabulario clave del cuento</div>
+        <div class="vocab-grid">
+          <span class="vocab-word"><em>hello</em></span>
+          <span class="vocab-word"><em>goodbye</em></span>
+          <span class="vocab-word"><em>I'm [name]</em></span>
+          <span class="vocab-word"><em>new</em></span>
+          <span class="vocab-word"><em>school</em></span>
+          <span class="vocab-word"><em>friend</em></span>
+          <span class="vocab-word"><em>happy</em></span>
+          <span class="vocab-word"><em>one · two · three</em></span>
+          <span class="vocab-word"><em>yes · no</em></span>
+          <span class="vocab-word"><em>please · thank you</em></span>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;padding:14px 18px;background:var(--n2l);border-radius:8px;font-size:12.5px;color:var(--n2t)">
+        <strong>Acceso DUA:</strong> El cuento se lee con pictogramas en cada frase, con signos LSE en las palabras clave y con TPR (el alumnado hace los gestos mientras la maestra narra). El comunicador tiene las frases del cuento disponibles para que el alumnado que no vocaliza pueda participar en la narración.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PANEL: SESIONES ────────────────────────────────────────────── -->
+<div class="panel" id="panel-sesiones">
+  <h2 class="panel-title">📅 Sesiones de la unidad</h2>
+  <p class="panel-sub">4 semanas · 3 sesiones de 45 minutos por semana · 12 sesiones en total. Cada sesión sigue la misma estructura de 5 momentos. Haz clic para expandir y añadir fotos de la implementación.</p>
+
+  <div class="week-selector">
+    <button class="week-btn active" onclick="showWeek(1,this)">Semana 1 · Presentación</button>
+    <button class="week-btn" onclick="showWeek(2,this)">Semana 2 · Consolidación</button>
+    <button class="week-btn" onclick="showWeek(3,this)">Semana 3 · Práctica</button>
+    <button class="week-btn" onclick="showWeek(4,this)">Semana 4 · Síntesis</button>
+  </div>
+
+  <!-- WEEK 1 -->
+  <div class="week-panel active" id="week-1">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:20px;font-weight:300">Objetivo de la semana: presentar el vocabulario de saludo y los rituales del aula. Primera exposición a la canción y al cuento.</p>
+
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S1</div>
+          <div class="session-info">
+            <h4>Sesión 1 · ¡Hello! Primera toma de contacto</h4>
+            <p>45 min · Introducción de la canción y rituales del aula</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item">
+            <div class="timeline-time">0–8 min</div>
+            <div class="timeline-dot" style="background:var(--n1)"></div>
+            <div class="timeline-content">
+              <div class="timeline-title">🎵 Apertura · Primera escucha de la canción</div>
+              <div class="timeline-desc">La maestra introduce la canción "Hello hello, what's your name?" cantándola entera con guitarra. El alumnado escucha sin presión de responder. Segunda vez: hace los gestos LSE visibles.</div>
+              <div class="timeline-tools"><span class="tool-pill">Guitarra</span><span class="tool-pill">LSE visible</span><span class="tool-pill">Sin respuesta exigida</span></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">8–18 min</div>
+            <div class="timeline-dot" style="background:var(--n2)"></div>
+            <div class="timeline-content">
+              <div class="timeline-title">📖 Cuento · Primera lectura de A new day at school</div>
+              <div class="timeline-desc">Lectura con pictogramas y signos LSE en cada página. El alumnado señala los personajes. Pausa en cada saludo para que el grupo repita con el canal que prefiera (voz, gesto, comunicador).</div>
+              <div class="timeline-tools"><span class="tool-pill">Pictogramas</span><span class="tool-pill">LSE</span><span class="tool-pill">Comunicador disponible</span></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">18–28 min</div>
+            <div class="timeline-dot" style="background:var(--accent)"></div>
+            <div class="timeline-content">
+              <div class="timeline-title">🏃 TPR · Hello and Goodbye</div>
+              <div class="timeline-desc">La maestra dice <em>"Hello!"</em> y hace el gesto de saludo; el grupo repite. Luego <em>"Goodbye!"</em> con el gesto correspondiente. Ronda de presentaciones: la maestra señala a un estudiante, dice "I'm [name]!" con el signo, y el estudiante responde como puede.</div>
+              <div class="timeline-tools"><span class="tool-pill">TPR</span><span class="tool-pill">LSE: hello/goodbye/I'm</span><span class="tool-pill">Respuesta libre</span></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">28–39 min</div>
+            <div class="timeline-dot" style="background:var(--n3)"></div>
+            <div class="timeline-content">
+              <div class="timeline-title">💬 Actividad comunicativa · La rueda de los nombres</div>
+              <div class="timeline-desc">En círculo, cada estudiante dice o señala su nombre usando el comunicador, la voz o el signo LSE de "name". La maestra modela con "I'm [name]!" y apunta los nombres en la pizarra con pictograma.</div>
+              <div class="timeline-tools"><span class="tool-pill">Comunicador</span><span class="tool-pill">Pictogramas nombres</span><span class="tool-pill">Sin corrección</span></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">39–45 min</div>
+            <div class="timeline-dot" style="background:var(--n1)"></div>
+            <div class="timeline-content">
+              <div class="timeline-title">🎵 Cierre · La canción de despedida</div>
+              <div class="timeline-desc">Se canta el estribillo de "Hello hello, what's your name?" y la estrofa de cierre con "Goodbye". La maestra hace los signos LSE. El grupo puede participar en el nivel que pueda: escuchar, gesticular, cantar.</div>
+              <div class="timeline-tools"><span class="tool-pill">Canción</span><span class="tool-pill">LSE</span><span class="tool-pill">Todos los canales válidos</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="dua-notes" style="margin-top:16px">
+          <strong>DUA · Acceso:</strong> Agenda visual de la sesión en la pizarra desde el primer momento. Comunicadores disponibles en todas las mesas. Toda respuesta es válida (voz, gesto, señalar, comunicador).
+        </div>
+        </div>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S2</div>
+          <div class="session-info">
+            <h4>Sesión 2 · Numbers 1–5</h4>
+            <p>45 min · Introducción de los números y Yes/No</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · Canción completa</div><div class="timeline-desc">Segunda escucha. La maestra invita a participar en el estribillo (call-and-response). El alumnado responde con su nombre en el hueco: "I'm _____!"</div><div class="timeline-tools"><span class="tool-pill"><em>Call-and-response</em></span><span class="tool-pill">Canción U1</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–20 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Números 1–5 con cuerpo y voz</div><div class="timeline-desc">La maestra dice "One!" y levanta un dedo; el grupo imita. Progresivamente hasta 5. Luego cuenta objetos del aula en inglés. Los estudiantes apuntan o señalan cuántos hay.</div><div class="timeline-tools"><span class="tool-pill">Dedos</span><span class="tool-pill">LSE: 1–5</span><span class="tool-pill">Objetos reales</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">20–32 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">💬 Actividad · ¿How many?</div><div class="timeline-desc">La maestra esconde objetos bajo una tela y pregunta "How many?" El alumnado responde levantando los dedos, señalando en el tablero numérico del comunicador o diciendo el número.</div><div class="timeline-tools"><span class="tool-pill">Tablero numérico</span><span class="tool-pill">Objetos del aula</span><span class="tool-pill">Comunicador</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">32–42 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · Segunda lectura con paradas</div><div class="timeline-desc">Segunda lectura del cuento. En cada página con números, el grupo los cuenta en voz alta. Paradas para preguntar "Yes or no?"</div><div class="timeline-tools"><span class="tool-pill">Pictogramas</span><span class="tool-pill">Yes/No visible</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">42–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Cierre · Canción + despedida en inglés</div><div class="timeline-desc">Canción de cierre. La maestra dice <em>"Goodbye!"</em> con el signo LSE y el grupo responde.</div></div></div>
+        </div>
+        </div>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S3</div>
+          <div class="session-info">
+            <h4>Sesión 3 · Please, Thank you · Rituales consolidados</h4>
+            <p>45 min · Vocabulario social y consolidación de la semana</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · Tercera escucha + participación coral</div><div class="timeline-desc">El alumnado ya conoce la melodía. La maestra invita a cantar el estribillo en coro. Algunos estudiantes hacen los signos LSE de forma espontánea.</div><div class="timeline-tools"><span class="tool-pill">Guitarra</span><span class="tool-pill"><em>Call-and-response</em></span><span class="tool-pill">Sin exigencia oral</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–18 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · Tercera lectura con énfasis social</div><div class="timeline-desc">Tercera lectura de Hello, Leo! La maestra hace una pausa cada vez que aparece un saludo o expresión de cortesía y el alumnado la completa por el canal que prefiera.</div><div class="timeline-tools"><span class="tool-pill">Pictogramas</span><span class="tool-pill">LSE</span><span class="tool-pill">Pausas participativas</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">18–28 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Please y Thank you</div><div class="timeline-desc">La maestra entrega y pide objetos usando please/thank you con gestos exagerados. El alumnado imita el gesto y la expresión. Ronda: la maestra pide un objeto a cada estudiante usando Can I have...? please.</div><div class="timeline-tools"><span class="tool-pill">Objetos del aula</span><span class="tool-pill">TPR</span><span class="tool-pill">Comunicador</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">28–39 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">💬 Actividad · Cadena de saludos completa</div><div class="timeline-desc">En cadena: estudiante A saluda a B (<em>'Hello, I'm [name]!'</em>), B responde y le pasa a C. Al final, todos se despiden con Goodbye + please/thank you por cualquier canal.</div><div class="timeline-tools"><span class="tool-pill">Sentence frame visible</span><span class="tool-pill">Cadena</span><span class="tool-pill">Todos los canales</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">39–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Cierre · Canción + despedida en inglés</div><div class="timeline-desc">Canción de cierre con gestos LSE. La maestra refuerza please y thank you en el saludo final.</div></div></div>
+          
+        </div>
+        </div>
+    </div>
+
+      </div>
+
+  <!-- WEEK 2 -->
+  <div class="week-panel" id="week-2">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:20px;font-weight:300">Objetivo de la semana: consolidar el vocabulario de la semana 1 con actividades de mayor interacción. Introducción del call-and-response autónomo.</p>
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S4</div>
+          <div class="session-info">
+            <h4>Sesión 4 · Consolidación del saludo</h4>
+            <p>45 min · Semana 2 · Primer día · Saludo en parejas</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · Canción: call-and-response consolidado</div><div class="timeline-desc">La maestra hace la pregunta, el grupo responde con el nombre. Participación por canal libre: voz, signo o comunicador.</div><div class="timeline-tools"><span class="tool-pill">Canción U1</span><span class="tool-pill"><em>Call-and-response</em></span><span class="tool-pill">Comunicador</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–18 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · Cuarta lectura con participación activa</div><div class="timeline-desc">El grupo ya conoce el cuento. La maestra para en cada frase y el alumnado la completa. Signo LSE en cada palabra clave señalado por el alumnado.</div><div class="timeline-tools"><span class="tool-pill">Completar frases</span><span class="tool-pill">LSE activo</span><span class="tool-pill">Comunicador</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">18–28 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Repaso completo del vocabulario de U1</div><div class="timeline-desc">La maestra dice una palabra o muestra un pictograma; el alumnado hace el signo LSE y el gesto TPR. Ronda rápida con todo el vocabulario de U1.</div><div class="timeline-tools"><span class="tool-pill">Tarjetas de vocabulario</span><span class="tool-pill">LSE</span><span class="tool-pill">TPR</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">28–39 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">💬 Actividad · Saludo en parejas</div><div class="timeline-desc">Por parejas, con el sentence frame visible en la pizarra: A: 'Hello! I'm [name].' B: 'Hello! I'm [name]. How are you?' A: <em>'I'm fine, thank you!'</em> La maestra circula y apoya.</div><div class="timeline-tools"><span class="tool-pill"><em>Sentence frame</em></span><span class="tool-pill">Parejas</span><span class="tool-pill">Comunicador disponible</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">39–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Cierre · Canción + despedida en inglés</div><div class="timeline-desc">Cierre con canción. La maestra hace un gesto de 'thumb up' por el trabajo de la semana.</div></div></div>
+          
+        </div>
+        </div>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S5</div>
+          <div class="session-info">
+            <h4>Sesión 5 · Juego de presentaciones</h4>
+            <p>45 min · Semana 2 · Yes/No game y presentaciones</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · Canción: presentaciones en cadena</div><div class="timeline-desc">La maestra señala a un estudiante, el grupo canta su nombre. Se repite hasta que todos han sido nombrados.</div><div class="timeline-tools"><span class="tool-pill">Guitarra</span><span class="tool-pill">LSE</span><span class="tool-pill">Todos los canales</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–18 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · Lectura interactiva en pequeño grupo</div><div class="timeline-desc">El grupo se divide en 3. Cada grupo tiene el libro y lo narra de forma autónoma con el apoyo de los pictogramas. La maestra rota y escucha.</div><div class="timeline-tools"><span class="tool-pill">Pequeño grupo</span><span class="tool-pill">Pictogramas</span><span class="tool-pill">Autonomía guiada</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">18–28 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Yes/No con el cuerpo</div><div class="timeline-desc">La maestra hace afirmaciones: <em>'This is a pencil. Yes or no?'</em> El alumnado responde con gesto de pulgar arriba/abajo, señalando en el comunicador o diciendo yes/no.</div><div class="timeline-tools"><span class="tool-pill">Pulgar arriba/abajo</span><span class="tool-pill">Comunicador</span><span class="tool-pill">Objetos reales</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">28–39 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">💬 Actividad · Juego de la pelota presentaciones</div><div class="timeline-desc">La maestra lanza una pelota a un estudiante y pregunta <em>'What's your name?'</em> El estudiante responde 'I'm [name]!' y lanza a otro haciendo la misma pregunta.</div><div class="timeline-tools"><span class="tool-pill">Pelota</span><span class="tool-pill">Interacción real</span><span class="tool-pill">Todos los canales</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">39–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Cierre · Canción + despedida en inglés</div><div class="timeline-desc">Cierre con canción. La maestra anuncia que la semana que viene el alumnado liderará la apertura.</div></div></div>
+          
+        </div>
+        </div>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S6</div>
+          <div class="session-info">
+            <h4>Sesión 6 · Revisión explícita de la semana</h4>
+            <p>45 min · Semana 2 · Síntesis y consolidación</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · Canción de revisión de la semana</div><div class="timeline-desc">Últimas notas de la semana. La maestra varía el tempo para que el alumnado anticipe los cambios.</div><div class="timeline-tools"><span class="tool-pill">Canción U1</span><span class="tool-pill">Tempo variado</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–18 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · Narración en cadena</div><div class="timeline-desc">Un estudiante narra la primera página, el siguiente la segunda, etc. La maestra apoya con pictogramas si alguien necesita ayuda. Toda respuesta es válida.</div><div class="timeline-tools"><span class="tool-pill">Narración en cadena</span><span class="tool-pill">Pictogramas</span><span class="tool-pill">Apoyo visual</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">18–28 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Vocabulario acumulado de las semanas 1 y 2</div><div class="timeline-desc">La maestra mezcla tarjetas de vocabulario de U1 y pide al alumnado que haga el signo o el gesto. Ronda de revisión rápida.</div><div class="timeline-tools"><span class="tool-pill">Tarjetas</span><span class="tool-pill">LSE</span><span class="tool-pill">Revisión acumulativa</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">28–39 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">💬 Actividad · Frase síntesis de la semana</div><div class="timeline-desc">Cada estudiante construye y comparte una frase con todo lo aprendido: 'Hello, I'm [name]! I'm fine, thank you! Goodbye!' usando canción, comunicador o gesto.</div><div class="timeline-tools"><span class="tool-pill">Frase síntesis</span><span class="tool-pill">Todos los canales</span><span class="tool-pill">Comunicador</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">39–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Cierre · Canción + despedida en inglés</div><div class="timeline-desc">Cierre de la semana. La maestra resume brevemente en español qué han aprendido esta semana.</div></div></div>
+          
+        </div>
+        </div>
+    </div>
+
+    
+  </div>
+
+  <!-- WEEK 3 -->
+  <div class="week-panel" id="week-3">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:20px;font-weight:300">Objetivo de la semana: práctica semi-autónoma. El alumnado lidera momentos de la sesión y produce con mínimo apoyo docente.</p>
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S7</div>
+          <div class="session-info">
+            <h4>Sesión 7 · El alumnado lidera la apertura</h4>
+            <p>45 min · Semana 3 · Autonomía creciente</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · Un estudiante voluntario lidera la apertura</div><div class="timeline-desc">Por primera vez, un estudiante (voluntario) toma la guitarra o el micrófono y lidera la canción. La maestra apoya desde atrás.</div><div class="timeline-tools"><span class="tool-pill">Liderazgo del alumnado</span><span class="tool-pill">Guitarra</span><span class="tool-pill">Apoyo docente</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–18 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · Narración interactiva</div><div class="timeline-desc">La maestra lee pero hace pausas largas; el alumnado completa. En las páginas finales, el grupo narra sin que la maestra diga nada.</div><div class="timeline-tools"><span class="tool-pill">Pausas largas</span><span class="tool-pill">Autonomía narrativa</span><span class="tool-pill">Pictogramas</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">18–28 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Juego de memoria: ¿qué falta?</div><div class="timeline-desc">La maestra coloca 5 tarjetas de vocabulario, el alumnado las observa, cierra los ojos y la maestra retira una. ¿Qué falta? El alumnado responde por cualquier canal.</div><div class="timeline-tools"><span class="tool-pill">Tarjetas</span><span class="tool-pill">Memoria visual</span><span class="tool-pill">Respuesta libre</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">28–39 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">💬 Actividad · Presentaciones autónomas</div><div class="timeline-desc">De pie, cada estudiante se presenta a la clase: 'Hello! I'm [name]!' El grupo responde: <em>'Hello, [name]!'</em> La maestra solo interviene si alguien necesita apoyo.</div><div class="timeline-tools"><span class="tool-pill">Presentación individual</span><span class="tool-pill">Respuesta coral</span><span class="tool-pill">Mínimo apoyo docente</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">39–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Cierre · Canción + despedida en inglés</div><div class="timeline-desc">Cierre con canción. El estudiante que lideró la apertura también cierra la sesión.</div></div></div>
+          
+        </div>
+        </div>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S8</div>
+          <div class="session-info">
+            <h4>Sesión 8 · Cuento interactivo</h4>
+            <p>45 min · Semana 3 · El alumnado narra</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · Canción liderada por el alumnado</div><div class="timeline-desc">Segundo estudiante voluntario lidera. El grupo responde con mayor autonomía.</div><div class="timeline-tools"><span class="tool-pill">Liderazgo rotativo</span><span class="tool-pill">LSE</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–23 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · El alumnado narra página a página</div><div class="timeline-desc">Cada estudiante narra una página del cuento con el apoyo de los pictogramas. La maestra escucha y solo interviene para dar vocabulario que el alumnado pide.</div><div class="timeline-tools"><span class="tool-pill">Narración autónoma</span><span class="tool-pill">Pictogramas</span><span class="tool-pill">Apoyo a demanda</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">23–33 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Signos LSE sin apoyo visual</div><div class="timeline-desc">La maestra dice la palabra en inglés sin mostrar la tarjeta; el alumnado hace el signo LSE de memoria. Se revisa con la lámina al final.</div><div class="timeline-tools"><span class="tool-pill">Memoria</span><span class="tool-pill">LSE</span><span class="tool-pill">Lámina de revisión</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">33–40 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">💬 Actividad · Mini-entrevistas</div><div class="timeline-desc">Por parejas: A entrevista a B con todas las preguntas aprendidas. B responde. Se alternan. La maestra observa y toma nota para la evaluación formativa.</div><div class="timeline-tools"><span class="tool-pill">Entrevistas</span><span class="tool-pill">Evaluación formativa</span><span class="tool-pill">Observación docente</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">39–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Cierre · Canción + despedida en inglés</div><div class="timeline-desc">Cierre con canción. La maestra celebra la narración del alumnado.</div></div></div>
+          
+        </div>
+        </div>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S9</div>
+          <div class="session-info">
+            <h4>Sesión 9 · Juego de números</h4>
+            <p>45 min · Semana 3 · Práctica autónoma de 1–5</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · Canción con rol de director</div><div class="timeline-desc">Un estudiante dirige al grupo con gestos: cuándo cantar, cuándo parar.</div><div class="timeline-tools"><span class="tool-pill">Rol de director</span><span class="tool-pill">Canción U1</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–18 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · Énfasis en los números</div><div class="timeline-desc">El grupo relee el cuento enfatizando las páginas con números. Cada vez que aparece un número, el alumnado lo dice/signa antes de que la maestra lo lea.</div><div class="timeline-tools"><span class="tool-pill">Anticipación</span><span class="tool-pill">Números 1–5</span><span class="tool-pill">LSE</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">18–28 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Números en contexto real</div><div class="timeline-desc">La maestra señala grupos reales del aula: <em>'How many chairs? How many windows?'</em> El alumnado cuenta y responde levantando dedos, señalando en el tablero o verbalmente.</div><div class="timeline-tools"><span class="tool-pill">Contexto real</span><span class="tool-pill">Tablero numérico</span><span class="tool-pill">Dedos</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">28–39 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">💬 Actividad · ¿Cuántos hay escondidos?</div><div class="timeline-desc">La maestra esconde objetos bajo una tela en grupos de 1 a 5. El alumnado adivina la cantidad. Quienes aciertan se convierten en los que esconden en la siguiente ronda.</div><div class="timeline-tools"><span class="tool-pill">Objetos</span><span class="tool-pill">Adivinanza</span><span class="tool-pill">Interacción entre iguales</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">39–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Cierre · Canción + despedida en inglés</div><div class="timeline-desc">Cierre con canción y cuenta final: ¿cuántas sesiones llevamos?</div></div></div>
+          
+        </div>
+        </div>
+    </div>
+
+    
+  </div>
+
+  <!-- WEEK 4 -->
+  <div class="week-panel" id="week-4">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:20px;font-weight:300">Objetivo de la semana: producción, evaluación y celebración. El alumnado demuestra lo aprendido y cierra la unidad.</p>
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S10</div>
+          <div class="session-info">
+            <h4>Sesión 10 · Bingo de vocabulario</h4>
+            <p>45 min · Semana 4 · Repaso lúdico completo</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · Canción repaso general</div><div class="timeline-desc">La maestra cambia letras deliberadamente (errores); el alumnado debe corregirla.</div><div class="timeline-tools"><span class="tool-pill">Errores intencionados</span><span class="tool-pill">Corrección activa</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–18 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · Última lectura completa</div><div class="timeline-desc">Lectura completa sin paradas. El grupo fluye con el texto. Al terminar, la maestra pregunta '¿Quién es Leo?' y el grupo responde señalando el personaje.</div><div class="timeline-tools"><span class="tool-pill">Fluidez</span><span class="tool-pill">Lectura completa</span><span class="tool-pill">Comprensión</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">18–28 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Repaso exprés de todo U1</div><div class="timeline-desc">La maestra dice 30 ítems de vocabulario de U1 en 10 minutos. El alumnado hace el signo o el gesto. Ritmo rápido y celebratorio.</div><div class="timeline-tools"><span class="tool-pill">Repaso completo</span><span class="tool-pill">LSE</span><span class="tool-pill">Ritmo alto</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">28–39 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">🎲 Actividad · Bingo de vocabulario U1</div><div class="timeline-desc">Cada estudiante tiene un cartón con pictogramas del vocabulario de U1. La maestra dice la palabra en inglés; quien la tiene la marca. El primero en completar la fila grita '<em>Hello!'</em></div><div class="timeline-tools"><span class="tool-pill">Cartones de bingo</span><span class="tool-pill">Pictogramas</span><span class="tool-pill">Vocabulario U1 completo</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">39–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Cierre · Canción + despedida en inglés</div><div class="timeline-desc">Cierre con canción. Celebración del Bingo.</div></div></div>
+          
+        </div>
+        </div>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S11</div>
+          <div class="session-info">
+            <h4>Sesión 11 · Producción final · Carnet de identidad</h4>
+            <p>45 min · Semana 4 · Producción autónoma</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · Canción: última semana de U1</div><div class="timeline-desc">El grupo canta con máxima autonomía. La maestra solo acompaña con guitarra.</div><div class="timeline-tools"><span class="tool-pill">Autonomía total</span><span class="tool-pill">Guitarra</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–18 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · El alumnado elige su página favorita</div><div class="timeline-desc">Cada estudiante señala su página favorita del cuento y explica brevemente por qué (en cualquier lengua y canal). La maestra escucha y valida todas las respuestas.</div><div class="timeline-tools"><span class="tool-pill">Preferencias</span><span class="tool-pill">Expresión libre</span><span class="tool-pill">Todas las lenguas válidas</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">18–25 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Calentamiento para la producción</div><div class="timeline-desc">La maestra repasa los ítems que aparecerán en el carnet: nombre, número favorito, saludo. Ronda rápida de señalización.</div><div class="timeline-tools"><span class="tool-pill">Calentamiento</span><span class="tool-pill">Vocabulario del carnet</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">25–39 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">✏️ Actividad · Producción del carnet de identidad</div><div class="timeline-desc">Cada estudiante elabora su carnet: nombre (escrito, dibujado, dictado o con pictograma), número favorito del 1 al 5, dibujo y saludo. El canal de producción es libre.</div><div class="timeline-tools"><span class="tool-pill">Plantilla carnet</span><span class="tool-pill">Producción libre</span><span class="tool-pill">Todos los canales</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">39–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Cierre · Canción + despedida en inglés</div><div class="timeline-desc">Cierre especial: cada estudiante muestra su carnet al salir.</div></div></div>
+          
+        </div>
+        </div>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header" onclick="toggleSession(this)">
+        <div class="session-header-left">
+          <div class="session-num">S12</div>
+          <div class="session-info">
+            <h4>Sesión 12 · Presentación del carnet y celebración</h4>
+            <p>45 min · Semana 4 · Evaluación y cierre de U1</p>
+          </div>
+        </div>
+        <span class="session-toggle">▾</span>
+      </div>
+      <div class="session-body">
+        <div class="session-timeline">
+          <div class="timeline-item"><div class="timeline-time">0–8 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎵 Apertura · 🎉 Canción de celebración</div><div class="timeline-desc">Última apertura de U1. El grupo entero canta con toda la energía. Tiempo para el inicio de la celebración.</div><div class="timeline-tools"><span class="tool-pill">Celebración</span><span class="tool-pill">Canción U1</span><span class="tool-pill">Toda la clase</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">8–18 min</div><div class="timeline-dot" style="background:var(--n2)"></div><div class="timeline-content"><div class="timeline-title">📖 Cuento · Retrospectiva: del primer día de Leo al nuestro</div><div class="timeline-desc">Última lectura de Hello, Leo! La maestra establece el paralelismo: Leo llegó el primer día como nosotros llegamos a U1 el primer día. ¿Qué aprendimos?</div><div class="timeline-tools"><span class="tool-pill">Retrospectiva</span><span class="tool-pill">Conexión emocional</span><span class="tool-pill">Todas las lenguas válidas</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">18–25 min</div><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-title">🏃 TPR · Lo que sabemos hacer ahora</div><div class="timeline-desc">La maestra dice una estructura; el alumnado la completa por el canal que quiera. Demostración de lo aprendido a lo largo de las 4 semanas.</div><div class="timeline-tools"><span class="tool-pill">Demostración</span><span class="tool-pill">Todas las estructuras U1</span><span class="tool-pill">Orgullo del aprendizaje</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">25–38 min</div><div class="timeline-dot" style="background:var(--n3)"></div><div class="timeline-content"><div class="timeline-title">🎤 Actividad · Presentación del carnet</div><div class="timeline-desc">Cada estudiante presenta su carnet a la clase: 'Hello! I'm [name]!' mostrando el carnet. El grupo responde: <em>'Hello, [name]!'</em> La maestra registra en la lista de cotejo.</div><div class="timeline-tools"><span class="tool-pill">Presentación individual</span><span class="tool-pill">Evaluación sumativa</span><span class="tool-pill">Lista de cotejo</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-time">38–45 min</div><div class="timeline-dot" style="background:var(--n1)"></div><div class="timeline-content"><div class="timeline-title">🎉 Cierre de U1 · Canción + celebración</div><div class="timeline-desc">Canción entera con todos los signos LSE aprendidos. Aplausos. La maestra entrega los carnets. Despedida especial de la unidad: Goodbye, U1!</div><div class="timeline-tools"><span class="tool-pill">Celebración</span><span class="tool-pill">Canción completa</span><span class="tool-pill">Carnets</span><span class="tool-pill">Goodbye U1</span></div></div></div>
+          
+        </div>
+        </div>
+    </div>
+
+    
+  </div>
+</div>
+
+<div class="panel" id="panel-materiales">
+  <h2 class="panel-title">🗂️ Materiales DUA</h2>
+  <p class="panel-sub">Recursos de acceso universal diseñados para la unidad. Disponibles para todo el alumnado sin necesidad de diagnóstico previo.</p>
+
+  <div class="materials-grid">
+    <div class="material-card">
+      <div class="material-icon">🖼️</div>
+      <div class="material-name">Pictogramas de vocabulario</div>
+      <div class="material-desc">Tarjetas con imagen + palabra en inglés para: hello, goodbye, I'm, name, yes, no, please, thank you, 1–5.</div>
+      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+    </div>
+    <div class="material-card">
+      <div class="material-icon">📱</div>
+      <div class="material-name">Tablero de comunicación</div>
+      <div class="material-desc">Comunicador pictográfico para U1 con las frases clave de la unidad. Imprimible A4 o digital en tablet.</div>
+      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+    </div>
+    <div class="material-card">
+      <div class="material-icon">🤟</div>
+      <div class="material-name">Lámina LSE · U1</div>
+      <div class="material-desc">Ilustraciones de los signos LSE de la unidad: hello, goodbye, name, friend, yes, no, 1–5.</div>
+      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+    </div>
+    <div class="material-card">
+      <div class="material-icon">📅</div>
+      <div class="material-name">Agenda visual de sesión</div>
+      <div class="material-desc">Secuencia de los 5 momentos de la sesión en formato pictográfico para la pizarra o la mesa del alumnado.</div>
+      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+    </div>
+    <div class="material-card">
+      <div class="material-icon">🎴</div>
+      <div class="material-name">Flashcards bilingüe</div>
+      <div class="material-desc">Tarjetas de vocabulario inglés–español con imagen y número LSE asociado. Imprimibles en A5.</div>
+      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+    </div>
+    <div class="material-card">
+      <div class="material-icon">🆔</div>
+      <div class="material-name">Plantilla carnet de identidad</div>
+      <div class="material-desc">Plantilla para la actividad de producción final: nombre, número favorito, foto y saludo en inglés.</div>
+      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+    </div>
+  </div>
+
+  <div class="upload-area">
+    <input type="file" multiple accept=".pdf,.png,.jpg,.mp4,.mp3" onchange="handleUpload(this)">
+    <div style="font-size:32px;margin-bottom:12px">📂</div>
+    <p style="font-weight:500;margin-bottom:4px">Añadir materiales propios</p>
+    <p style="font-size:12px;color:var(--text3)">PDF, imágenes, audio, vídeo · Haz clic o arrastra aquí</p>
+  </div>
+  <div id="uploadedFiles" style="margin-top:16px;display:flex;flex-wrap:wrap;gap:8px"></div>
+</div>
+
+<!-- ── PANEL: EVALUACIÓN ──────────────────────────────────────────── -->
+<div class="panel" id="panel-evaluacion">
+  <h2 class="panel-title">📊 Evaluación inclusiva</h2>
+  <p class="panel-sub">Sistema de evaluación fundamentado en el principio de Acción y Expresión del DUA. Diversifica los instrumentos de recogida de evidencias sin reducir el nivel de exigencia competencial. Toda respuesta válida (oral, gestual, signada, pictográfica) es evidencia de aprendizaje.</p>
+
+  <h3 style="font-family:var(--serif);font-size:18px;margin-bottom:4px">Criterios de evaluación · U1</h3>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:4px;font-weight:300">Vinculados a los saberes básicos del Bloque A del RD 157/2022 y a los descriptores Pre-A1 del MCER 2020.</p>
+
+  <div class="rubric-wrap"><table class="rubric-table">
+    <thead>
+      <tr>
+        <th style="width:22%">Criterio</th>
+        <th style="width:20%"><span class="level-badge lb-exc">Excelente</span></th>
+        <th style="width:20%"><span class="level-badge lb-ad">Adecuado</span></th>
+        <th style="width:19%"><span class="level-badge lb-basic">Básico</span></th>
+        <th style="width:19%"><span class="level-badge lb-ini">En progreso</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Saludo y despedida</strong><br><span style="font-size:10px;color:var(--text3)">Hello, Goodbye · por cualquier canal</span></td>
+        <td>Usa hello/goodbye de forma autónoma e inicia el intercambio</td>
+        <td>Responde correctamente al saludo de la maestra</td>
+        <td>Reconoce y señala el pictograma correspondiente</td>
+        <td>Participa en la rutina con apoyo continuo</td>
+      </tr>
+      <tr>
+        <td><strong>Presentación</strong><br><span style="font-size:10px;color:var(--text3)">I'm [name] · por cualquier canal</span></td>
+        <td>Produce "I'm [name]!" de forma espontánea en contexto</td>
+        <td>Completa la estructura con su nombre cuando se le pide</td>
+        <td>Selecciona su nombre en el comunicador</td>
+        <td>Señala o hace el signo LSE de "name" con apoyo</td>
+      </tr>
+      <tr>
+        <td><strong>Números 1–5</strong><br><span style="font-size:10px;color:var(--text3)">Reconocimiento y producción</span></td>
+        <td>Produce los números 1–5 con voz, dedos o signo LSE de forma autónoma</td>
+        <td>Señala el número correcto cuando se nombra</td>
+        <td>Empareja número-cantidad con pictograma</td>
+        <td>Participa en el conteo grupal con apoyo</td>
+      </tr>
+      <tr>
+        <td><strong>Vocabulario social</strong><br><span style="font-size:10px;color:var(--text3)">please · thank you · yes · no</span></td>
+        <td>Usa please y thank you en situaciones reales del aula</td>
+        <td>Responde yes/no correctamente a preguntas simples</td>
+        <td>Señala yes/no en el comunicador cuando se pregunta</td>
+        <td>Distingue yes de no con apoyo gestual</td>
+      </tr>
+      <tr>
+        <td><strong>Participación en la canción</strong><br><span style="font-size:10px;color:var(--text3)">Canal libre</span></td>
+        <td>Participa activamente: canta, signa y/o hace TPR de forma sostenida</td>
+        <td>Participa en el estribillo con al menos un canal</td>
+        <td>Hace los gestos TPR o sigue la melodía</td>
+        <td>Escucha activamente y mira a la maestra</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div style="margin-top:24px;padding:20px;background:var(--n1l);border-radius:var(--radius)">
+    <h4 style="font-family:var(--serif);font-size:16px;color:var(--n1t);margin-bottom:8px">Instrumentos de recogida de evidencias</h4>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px">
+      <div style="background:white;border-radius:8px;padding:14px;border:1px solid rgba(83,74,183,0.15)"><div style="font-size:18px;margin-bottom:6px">👁️</div><div style="font-size:12.5px;font-weight:500;color:var(--n1t);margin-bottom:4px">Observación directa</div><div style="font-size:11.5px;color:var(--text2)">Lista de cotejo durante las actividades. Sin interrumpir la dinámica.</div></div>
+      <div style="background:white;border-radius:8px;padding:14px;border:1px solid rgba(83,74,183,0.15)"><div style="font-size:18px;margin-bottom:6px">📸</div><div style="font-size:12.5px;font-weight:500;color:var(--n1t);margin-bottom:4px">Evidencias fotográficas</div><div style="font-size:11.5px;color:var(--text2)">Fotos de los carnets de identidad y las producciones finales.</div></div>
+      <div style="background:white;border-radius:8px;padding:14px;border:1px solid rgba(83,74,183,0.15)"><div style="font-size:18px;margin-bottom:6px">🎤</div><div style="font-size:12.5px;font-weight:500;color:var(--n1t);margin-bottom:4px">Audio/vídeo</div><div style="font-size:11.5px;color:var(--text2)">Grabación opcional de la presentación del carnet (con autorización).</div></div>
+      <div style="background:white;border-radius:8px;padding:14px;border:1px solid rgba(83,74,183,0.15)"><div style="font-size:18px;margin-bottom:6px">📋</div><div style="font-size:12.5px;font-weight:500;color:var(--n1t);margin-bottom:4px">Portfolio</div><div style="font-size:11.5px;color:var(--text2)">El carnet de identidad forma parte del portfolio del ciclo.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Tabs
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'instant'});
+}
+
+// Sessions toggle
+function toggleSession(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.session-toggle');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  toggle.classList.toggle('open', !isOpen);
+}
+
+// Weeks
+function showWeek(num, btn) {
+  document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.week-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('week-' + num).classList.add('active');
+}
+
+// Video embed
+
+function extractYouTubeId(url) {
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+function updateVideo2(url) {
+  const frame = document.getElementById("videoFrame2");
+  const placeholder = document.getElementById("videoPlaceholder2");
+  if (!frame || !placeholder) return;
+  const id = extractYouTubeId(url);
+  if (id) {
+    frame.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=0" frameborder="0" allowfullscreen style="border-radius:10px;display:block;"></iframe>`;
+  } else {
+    frame.innerHTML = `<div class="video-placeholder" id="videoPlaceholder2"><div class="play-btn">▶</div><p style="font-size:13px;font-weight:500;margin-bottom:6px">Versión con pictogramas y signos LSE</p><p style="font-size:11px;color:var(--text3)">Para uso en el aula como apoyo visual</p></div>`;
+  }
+}
+
+function updateVideo(url) {
+  if (!url) return;
+  let embedUrl = '';
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (yt) embedUrl = 'https://www.youtube.com/embed/' + yt[1] + '?rel=0';
+  const vimeo = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeo) embedUrl = 'https://player.vimeo.com/video/' + vimeo[1];
+
+  const frame = document.getElementById('videoFrame');
+  const placeholder = document.getElementById('videoPlaceholder');
+  if (embedUrl) {
+    placeholder.style.display = 'none';
+    let iframe = frame.querySelector('iframe');
+    if (!iframe) { iframe = document.createElement('iframe'); frame.appendChild(iframe); }
+    iframe.src = embedUrl;
+    iframe.allowFullscreen = true;
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+  }
+}
+
+// Photo loading
+function loadPhoto(input, event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  const slot = input.parentElement;
+  reader.onload = e => {
+    slot.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    slot.appendChild(img);
+  };
+  reader.readAsDataURL(file);
+}
+
+// Cover loading
+function loadCover(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  const cover = document.getElementById('storyCover');
+  reader.onload = e => {
+    cover.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius)">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// File upload
+function handleUpload(input) {
+  const container = document.getElementById('uploadedFiles');
+  Array.from(input.files).forEach(file => {
+    const chip = document.createElement('div');
+    chip.style.cssText = 'background:var(--n1l);color:var(--n1t);padding:6px 14px;border-radius:100px;font-size:11.5px;font-weight:500;display:flex;align-items:center;gap:6px';
+    chip.innerHTML = `<span>📄</span> ${file.name}`;
+    container.appendChild(chip);
+  });
+}
+
+function addPage(input, event) {
+  loadPhoto(input, event);
+}
+</script>
+</body>
+</html>
