@@ -47,6 +47,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
   border:none;background:none;cursor:pointer;
   white-space:nowrap;border-bottom:2.5px solid transparent;
   transition:all 0.2s;font-family:var(--sans);
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
 }
 .tab-btn:hover{color:var(--text)}
 .tab-btn.active{color:var(--n1);border-bottom-color:var(--n1);font-weight:500}
@@ -87,7 +88,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
 }
 
 /* ── CONTENT PANELS ──────────────────────────────────────────────── */
-.panel{display:none;padding:64px 80px;max-width:1100px}
+.panel{display:none;padding:64px 80px;max-width:1100px;width:100%}
 .panel.active{display:block}
 
 .panel-title{
@@ -122,7 +123,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
   width:100%;margin-top:12px;
   padding:10px 14px;border-radius:8px;
   border:1px solid var(--border);font-family:var(--sans);
-  font-size:12px;color:var(--text2);background:var(--surface);
+  font-size:16px;color:var(--text2);background:var(--surface);
+  -webkit-appearance:none;
 }
 
 .lyrics-card{
@@ -197,6 +199,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
   border:1px solid var(--border);background:var(--surface);
   cursor:pointer;font-family:var(--sans);color:var(--text2);
   transition:all 0.2s;font-weight:400;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
 }
 .week-btn:hover{border-color:var(--n1);color:var(--n1)}
 .week-btn.active{background:var(--n1l);color:var(--n1t);border-color:var(--n1);font-weight:500}
@@ -214,6 +217,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
   padding:18px 24px;cursor:pointer;
   transition:background 0.2s;
   justify-content:space-between;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  min-height:64px;
 }
 .session-header:hover{background:var(--bg)}
 .session-header-left{display:flex;align-items:center;gap:16px}
@@ -381,8 +386,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
   #hero { padding: 48px 20px 40px }
   .hero-title { font-size: clamp(26px, 6vw, 40px) }
 
-  .panel { padding: 32px 16px }
+  .panel { padding: 28px 16px }
   .panel-title { font-size: 22px }
+  .panel-sub { margin-bottom: 24px; font-size: 13px }
 
   .song-grid, .story-grid { grid-template-columns: 1fr }
 
@@ -393,8 +399,15 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
   .tab-btn { padding: 12px 16px; font-size: 12px }
 
   .materials-grid { grid-template-columns: 1fr 1fr }
+  .material-btn { text-align: center; padding: 10px 14px; font-size: 13px }
 
   .timeline-time { min-width: 46px; font-size: 10px }
+  .timeline-item { gap: 10px }
+  .timeline-title { font-size: 13px }
+  .timeline-desc { font-size: 12px }
+
+  .session-header { padding: 14px 16px; }
+  .session-header-left { gap: 10px }
 }
 
 @media(max-width:480px){
@@ -465,31 +478,35 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
       <div>
         <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">🎸 Vídeo 1 · Canción con imágenes y guitarra</div>
         <div class="video-frame" id="videoFrame">
-          <div class="video-placeholder" id="videoPlaceholder">
-            <div class="play-btn">▶</div>
-            <p style="font-size:13px;font-weight:500;margin-bottom:6px">Interpretación con guitarra</p>
-            <p style="font-size:11px;color:var(--text3)">Con imágenes y vídeos del cuento</p>
-          </div>
+          <a href="https://www.youtube.com/watch?v=mva6DdPVLEk" target="_blank" rel="noopener"
+             style="display:block;position:relative;width:100%;height:100%;text-decoration:none;">
+            <img src="https://img.youtube.com/vi/mva6DdPVLEk/hqdefault.jpg"
+                 alt="Canción Hello hello, what's your name? — guitarra"
+                 style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);border-radius:10px;">
+              <div style="width:64px;height:64px;background:rgba(255,0,0,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                <div style="width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:22px solid white;margin-left:4px;"></div>
+              </div>
+            </div>
+          </a>
         </div>
-        <input class="video-url-input" id="videoUrl" type="text"
-          placeholder="Pega la URL de YouTube: https://youtu.be/..."
-          oninput="updateVideo(this.value)">
-        <p style="font-size:11px;color:var(--text3);margin-top:5px">El vídeo se incrustará automáticamente al pegar la URL</p>
       </div>
 
       <div>
         <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">🤟 Vídeo 2 · Canción con pictogramas y LSE</div>
         <div class="video-frame" id="videoFrame2">
-          <div class="video-placeholder" id="videoPlaceholder2">
-            <div class="play-btn">▶</div>
-            <p style="font-size:13px;font-weight:500;margin-bottom:6px">Versión con pictogramas y signos LSE</p>
-            <p style="font-size:11px;color:var(--text3)">Para uso en el aula como apoyo visual</p>
-          </div>
+          <a href="https://www.youtube.com/watch?v=a_ej_QFVnF0" target="_blank" rel="noopener"
+             style="display:block;position:relative;width:100%;height:100%;text-decoration:none;">
+            <img src="https://img.youtube.com/vi/a_ej_QFVnF0/hqdefault.jpg"
+                 alt="Canción Hello hello, what's your name? — LSE y pictogramas"
+                 style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);border-radius:10px;">
+              <div style="width:64px;height:64px;background:rgba(255,0,0,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                <div style="width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:22px solid white;margin-left:4px;"></div>
+              </div>
+            </div>
+          </a>
         </div>
-        <input class="video-url-input" id="videoUrl2" type="text"
-          placeholder="Pega la URL de YouTube: https://youtu.be/..."
-          oninput="updateVideo2(this.value)">
-        <p style="font-size:11px;color:var(--text3);margin-top:5px">El vídeo se incrustará automáticamente al pegar la URL</p>
       </div>
 
 
@@ -594,7 +611,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
           <span class="vocab-word"><em>school</em></span>
           <span class="vocab-word"><em>friend</em></span>
           <span class="vocab-word"><em>happy</em></span>
-          <span class="vocab-word"><em>one · two · three</em></span>
+          <span class="vocab-word"><em>one · two · three · four · five</em></span>
           <span class="vocab-word"><em>yes · no</em></span>
           <span class="vocab-word"><em>please · thank you</em></span>
         </div>
@@ -968,39 +985,39 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
   <div class="materials-grid">
     <div class="material-card">
       <div class="material-icon">🖼️</div>
-      <div class="material-name">Pictogramas de vocabulario</div>
-      <div class="material-desc">Tarjetas con imagen + palabra en inglés para: hello, goodbye, I'm, name, yes, no, please, thank you, 1–5.</div>
-      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+      <div class="material-name">Flashcards de vocabulario</div>
+      <div class="material-desc">Tarjetas interactivas con imagen ARASAAC + palabra en inglés. Con audio y vista para imprimir (4 por A4).</div>
+      <a class="material-btn" href="./flashcards-u1.html" target="_blank" rel="noopener">Abrir ↗</a>
     </div>
     <div class="material-card">
       <div class="material-icon">📱</div>
-      <div class="material-name">Tablero de comunicación</div>
-      <div class="material-desc">Comunicador pictográfico para U1 con las frases clave de la unidad. Imprimible A4 o digital en tablet.</div>
-      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+      <div class="material-name">Tablero de comunicación SAAC</div>
+      <div class="material-desc">Tablero pictográfico interactivo con el vocabulario de U1. Cada celda habla al tocarse. Imprimible.</div>
+      <a class="material-btn" href="./tablero-saac.html" target="_blank" rel="noopener">Abrir ↗</a>
+    </div>
+    <div class="material-card">
+      <div class="material-icon">🗣️</div>
+      <div class="material-name">Mi Comunicador</div>
+      <div class="material-desc">Comunicador AAC interactivo con barra de frases, categorías editables y vocabulario de U1 precargado.</div>
+      <a class="material-btn" href="./comunicador.html" target="_blank" rel="noopener">Abrir ↗</a>
     </div>
     <div class="material-card">
       <div class="material-icon">🤟</div>
-      <div class="material-name">Lámina LSE · U1</div>
-      <div class="material-desc">Ilustraciones de los signos LSE de la unidad: hello, goodbye, name, friend, yes, no, 1–5.</div>
-      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+      <div class="material-name">Signos LSE · U1</div>
+      <div class="material-desc">Vídeos en bucle de los signos de la Lengua de Signos Española para el vocabulario de U1: hello, goodbye, yes, no, please, thank you, 1–5 y más.</div>
+      <a class="material-btn" href="./lse-signs.html" target="_blank" rel="noopener">Abrir ↗</a>
     </div>
     <div class="material-card">
       <div class="material-icon">📅</div>
       <div class="material-name">Agenda visual de sesión</div>
-      <div class="material-desc">Secuencia de los 5 momentos de la sesión en formato pictográfico para la pizarra o la mesa del alumnado.</div>
-      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
-    </div>
-    <div class="material-card">
-      <div class="material-icon">🎴</div>
-      <div class="material-name">Flashcards bilingüe</div>
-      <div class="material-desc">Tarjetas de vocabulario inglés–español con imagen y número LSE asociado. Imprimibles en A5.</div>
-      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+      <div class="material-desc">Los 5 momentos de la sesión con color e icono. El docente marca el momento activo durante la clase. Imprimible en horizontal.</div>
+      <a class="material-btn" href="./agenda-visual.html" target="_blank" rel="noopener">Abrir ↗</a>
     </div>
     <div class="material-card">
       <div class="material-icon">🆔</div>
       <div class="material-name">Plantilla carnet de identidad</div>
       <div class="material-desc">Plantilla para la actividad de producción final: nombre, número favorito, foto y saludo en inglés.</div>
-      <button class="material-btn" onclick="alert('Descarga disponible próximamente')">Descargar PDF</button>
+      <span class="material-btn" style="opacity:0.45;cursor:default;pointer-events:none">Próximamente</span>
     </div>
   </div>
 
@@ -1088,7 +1105,7 @@ function showTab(name, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('panel-' + name).classList.add('active');
-  window.scrollTo({top: 0, behavior: 'instant'});
+  window.scrollTo(0, 0);
 }
 
 // Sessions toggle

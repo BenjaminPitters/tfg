@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>U1 - Hello, my world! - Communication Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: #f4f6f9; padding: 24px; }
+    .page-header { text-align: center; margin-bottom: 6px; }
+    .page-header h1 { font-size: 22px; font-weight: 800; color: #2C3E50; }
+    .page-header p { font-size: 12px; color: #7F8C8D; margin-top: 4px; }
+    .hint { text-align: center; font-size: 13px; color: #6C3483; font-weight: 700; margin: 10px 0 16px; }
+    #board { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .section { border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.09); }
+    .sec-header { padding: 7px 14px; font-size: 11px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.8px; }
+    .cell-grid { display: flex; flex-wrap: wrap; padding: 10px; gap: 8px; background: #fff; }
+    .saac-cell { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 8px 6px; border: 3px solid; border-radius: 10px; background: #fff; cursor: pointer; width: 110px; text-align: center; transition: transform 0.1s, box-shadow 0.1s; user-select: none; }
+    .saac-cell:hover { transform: scale(1.04); box-shadow: 0 4px 14px rgba(0,0,0,0.14); }
+    .saac-cell:active { transform: scale(0.96); }
+    .saac-cell.speaking { box-shadow: 0 0 0 4px rgba(108,52,131,0.35); }
+    .pic-box { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; background: #fff; border: 0.5px solid #eee; }
+    .pic-box img { width: 80px; height: 80px; object-fit: contain; display: block; }
+    .pic-loading { width: 24px; height: 24px; border: 3px solid #e0e0e0; border-top-color: #aaa; border-radius: 50%; animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .cell-label { font-size: 11px; font-weight: 800; line-height: 1.2; }
+    .footer { max-width: 700px; margin: 14px auto 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+    .print-btn { background: #2C3E50; color: #fff; border: none; padding: 9px 22px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif; }
+    .print-btn:hover { background: #1A252F; }
+    #voice-bar { max-width: 700px; margin: 0 auto 12px; display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 8px; padding: 8px 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+    #voice-bar label { font-size: 12px; font-weight: 700; color: #555; white-space: nowrap; }
+    #voice-select { flex: 1; font-size: 12px; font-family: 'Nunito', sans-serif; border: 1.5px solid #ddd; border-radius: 6px; padding: 4px 8px; }
+    .credit { text-align: center; font-size: 10px; color: #bbb; margin-top: 12px; }
+    @media print {
+      body { background: #fff; padding: 8mm; }
+      .hint, #voice-bar, .print-btn, .credit { display: none !important; }
+      .footer { display: none; }
+      .saac-cell { break-inside: avoid; box-shadow: none !important; }
+      .section { box-shadow: none; border: 0.5px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Hello, my world! - Communication Board</h1>
+  <p>U1 - Nivel 1 Acceso - Pre-A1 - ARASAAC (Gobierno de Aragon)</p>
+</div>
+<p class="hint">Click any cell to hear it in English</p>
+
+<div id="voice-bar">
+  <label for="voice-select">English voice:</label>
+  <select id="voice-select"></select>
+</div>
+
+<div id="board"></div>
+
+<div class="footer">
+  <div class="legend" id="legend"></div>
+  <button class="print-btn" onclick="window.print()">Print board</button>
+</div>
+
+<p class="credit">Pictograms: ARASAAC - Gobierno de Aragon - arasaac.org - CC BY-NC-SA 4.0</p>
+
+<script>
+// All specific IDs confirmed by Ben from arasaac.org
+// Remaining cells use keyword search as fallback
+const SECTIONS = [
+  { label: "Greetings", color: "#E67E22", items: [
+    { label: "Hello!",    speak: "Hello!",    search: {lang:"en", term:"hello"} },
+    { label: "Goodbye!",  speak: "Goodbye!",  search: {lang:"en", term:"goodbye"} },
+  ]},
+  { label: "Social words", color: "#C0392B", items: [
+    { label: "Yes",         speak: "Yes",          search: {lang:"en", term:"yes"} },
+    { label: "No",          speak: "No",           search: {lang:"en", term:"no"} },
+    { label: "Please",      speak: "Please",       search: {lang:"en", term:"please"} },
+    { label: "Thank you!",  speak: "Thank you!",   search: {lang:"en", term:"thank you"} },
+  ]},
+  { label: "Questions", color: "#7D3C98", items: [
+    { label: "How are you?",      speak: "How are you?",       id: 11597 },
+    { label: "What's your name?", speak: "What is your name?", id: 27353 },
+  ]},
+  { label: "Responses", color: "#1A6FA0", items: [
+    { label: "I'm fine!",  speak: "I am fine, thank you!", id: 13630 },
+    { label: "I'm [name]", speak: "I am",                  id: 6632  },
+  ]},
+  { label: "Numbers 1-5", color: "#1A7A4A", items: [
+    { label: "1 - One",   speak: "One",   id: 7291 },
+    { label: "2 - Two",   speak: "Two",   id: 7027 },
+    { label: "3 - Three", speak: "Three", id: 7283 },
+    { label: "4 - Four",  speak: "Four",  id: 7005 },
+    { label: "5 - Five",  speak: "Five",  id: 6979 },
+  ]},
+];
+
+// ── Voice ──────────────────────────────────────────────────────
+const voiceSel = document.getElementById("voice-select");
+let selVoice = null;
+
+function fillVoices() {
+  const en = speechSynthesis.getVoices().filter(v => v.lang.startsWith("en"));
+  if (!en.length) return;
+  voiceSel.innerHTML = "";
+  en.forEach((v, i) => {
+    const o = document.createElement("option");
+    o.value = i;
+    o.textContent = v.name + " (" + v.lang + ")";
+    voiceSel.appendChild(o);
+  });
+  const best = en.findIndex(v =>
+    /google uk english female/i.test(v.name) ||
+    /google uk english male/i.test(v.name)   ||
+    /google us english/i.test(v.name)        ||
+    /samantha/i.test(v.name) || /daniel/i.test(v.name)
+  );
+  voiceSel.selectedIndex = best >= 0 ? best : 0;
+  selVoice = en[voiceSel.selectedIndex];
+  voiceSel.onchange = () => { selVoice = en[parseInt(voiceSel.value)]; };
+}
+fillVoices();
+speechSynthesis.addEventListener("voiceschanged", fillVoices);
+
+function speak(text, cell) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-GB";
+  if (selVoice) u.voice = selVoice;
+  u.rate = 0.82; u.pitch = 1.05;
+  speechSynthesis.speak(u);
+  if (cell) {
+    cell.classList.add("speaking");
+    u.onend = () => cell.classList.remove("speaking");
+    setTimeout(() => cell.classList.remove("speaking"), 2500);
+  }
+}
+
+// ── Image loading ──────────────────────────────────────────────
+function picUrl(id) {
+  return "https://static.arasaac.org/pictograms/" + id + "/" + id + "_300.png";
+}
+
+async function fetchId(lang, term) {
+  try {
+    const res = await fetch("https://api.arasaac.org/api/pictograms/" + lang + "/search/" + encodeURIComponent(term));
+    if (!res.ok) return null;
+    const data = await res.json();
+    return Array.isArray(data) && data.length ? data[0]._id : null;
+  } catch { return null; }
+}
+
+function loadImg(picBox, item) {
+  const spinner = document.createElement("div");
+  spinner.className = "pic-loading";
+  picBox.appendChild(spinner);
+
+  function setImg(id) {
+    if (!id) { spinner.style.display = "none"; return; }
+    const img = document.createElement("img");
+    img.alt = item.label;
+    img.src = picUrl(id);
+    img.onload = () => { picBox.innerHTML = ""; picBox.appendChild(img); };
+    img.onerror = () => { spinner.style.display = "none"; };
+  }
+
+  if (item.id) {
+    setImg(item.id);
+  } else {
+    fetchId(item.search.lang, item.search.term).then(setImg);
+  }
+}
+
+// ── Render ─────────────────────────────────────────────────────
+const board  = document.getElementById("board");
+const legend = document.getElementById("legend");
+
+SECTIONS.forEach(sec => {
+  const sDiv = document.createElement("div");
+  sDiv.className = "section";
+  const hDiv = document.createElement("div");
+  hDiv.className = "sec-header";
+  hDiv.style.background = sec.color;
+  hDiv.textContent = sec.label;
+  sDiv.appendChild(hDiv);
+
+  const grid = document.createElement("div");
+  grid.className = "cell-grid";
+
+  sec.items.forEach(item => {
+    const cell = document.createElement("div");
+    cell.className = "saac-cell";
+    cell.style.borderColor = sec.color;
+    cell.setAttribute("role", "button");
+    cell.setAttribute("tabindex", "0");
+    cell.setAttribute("aria-label", "Hear: " + item.label);
+    cell.onclick = () => speak(item.speak, cell);
+    cell.onkeydown = e => { if (e.key === "Enter" || e.key === " ") speak(item.speak, cell); };
+
+    const picBox = document.createElement("div");
+    picBox.className = "pic-box";
+    loadImg(picBox, item);
+
+    const lbl = document.createElement("span");
+    lbl.className = "cell-label";
+    lbl.style.color = sec.color;
+    lbl.textContent = item.label;
+
+    cell.appendChild(picBox);
+    cell.appendChild(lbl);
+    grid.appendChild(cell);
+  });
+
+  sDiv.appendChild(grid);
+  board.appendChild(sDiv);
+
+  const li  = document.createElement("div");
+  li.className = "legend-item";
+  const dot = document.createElement("div");
+  dot.className = "legend-dot";
+  dot.style.background = sec.color;
+  const span = document.createElement("span");
+  span.style.color = sec.color;
+  span.textContent = sec.label;
+  li.appendChild(dot);
+  li.appendChild(span);
+  legend.appendChild(li);
+});
+</script>
+</body>
+</html>

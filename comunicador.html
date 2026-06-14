@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Communicator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --cell: 118px; --r: 11px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: #eef1f5; min-height: 100vh; }
+
+    /* ── Top bar ── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: #1e2d3d; color: #fff;
+      padding: 9px 14px; display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .app-title { font-size: 15px; font-weight: 800; flex: 1; letter-spacing: -0.3px; }
+    #voice-select {
+      font-size: 11px; font-family: 'Nunito', sans-serif;
+      border: none; border-radius: 6px; padding: 4px 6px; max-width: 170px;
+    }
+    .tbtn {
+      background: rgba(255,255,255,0.13); color: #fff; border: none;
+      padding: 6px 11px; border-radius: 7px; font-size: 12px; font-weight: 700;
+      cursor: pointer; font-family: 'Nunito', sans-serif; white-space: nowrap;
+    }
+    .tbtn:hover { background: rgba(255,255,255,0.23); }
+    .tbtn.on { background: #e08c2a; }
+
+    /* ── Phrase bar ── */
+    #phrase-bar {
+      position: fixed; top: 50px; left: 0; right: 0; z-index: 95;
+      background: #fff; padding: 8px 10px;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 1px 0 #e0e0e0;
+      min-height: 64px;
+    }
+    #phrase-text {
+      flex: 1; min-height: 44px; max-height: 88px;
+      overflow-y: auto; padding: 6px 10px;
+      background: #f4f6f9; border-radius: 10px;
+      font-size: 20px; font-weight: 700; color: #1e2d3d;
+      line-height: 1.4; word-break: break-word;
+      border: 2px solid #e0e0e0;
+    }
+    #phrase-text.has-text { border-color: #7D3C98; background: #fdf9ff; }
+    #phrase-text .placeholder { color: #bbb; font-size: 14px; font-weight: 400; }
+    .phrase-btn {
+      width: 44px; height: 44px; border-radius: 10px; border: none;
+      font-size: 20px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+      font-family: 'Nunito', sans-serif;
+    }
+    #pbtn-del   { background: #f5f5f5; color: #555; }
+    #pbtn-clear { background: #fdecea; color: #c0392b; }
+    #pbtn-speak { background: #1A7A4A; color: #fff; font-size: 18px; width: 52px; }
+    .phrase-btn:hover { opacity: 0.85; }
+    .phrase-btn:disabled { opacity: 0.3; cursor: default; }
+
+    /* ── Category bar ── */
+    #catbar {
+      position: fixed; top: 114px; left: 0; right: 0; z-index: 90;
+      background: #fff; padding: 7px 14px;
+      display: flex; gap: 6px; overflow-x: auto;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    #catbar::-webkit-scrollbar { height: 3px; }
+    #catbar::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+    .ctab {
+      padding: 5px 14px; border-radius: 20px; border: 2px solid;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      white-space: nowrap; background: #fff;
+      font-family: 'Nunito', sans-serif; transition: background 0.15s, color 0.15s;
+    }
+    .ctab.active { color: #fff !important; }
+    #btn-addcat {
+      padding: 5px 13px; border-radius: 20px; border: 2px dashed #bbb;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      white-space: nowrap; background: #fff; color: #999;
+      font-family: 'Nunito', sans-serif; display: none;
+    }
+    #btn-addcat:hover { border-color: #666; color: #555; }
+
+    /* ── Grid ── */
+    #grid {
+      margin-top: 160px; padding: 14px;
+      display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start;
+      min-height: calc(100vh - 100px);
+    }
+
+    /* ── Cell ── */
+    .cell {
+      width: var(--cell); display: flex; flex-direction: column;
+      align-items: center; border: 3px solid; border-radius: var(--r);
+      background: #fff; cursor: pointer; position: relative;
+      transition: transform 0.1s, box-shadow 0.1s; user-select: none;
+      overflow: hidden;
+    }
+    .cell:hover { transform: scale(1.05); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+    .cell:active { transform: scale(0.96); }
+    .cell.speaking { box-shadow: 0 0 0 4px rgba(108,52,131,0.4) !important; }
+    .cell-img { width: var(--cell); height: var(--cell); object-fit: contain; display: block; }
+    .cell-noimg {
+      width: var(--cell); height: var(--cell);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; background: #f5f5f5; color: #ccc;
+    }
+    .cell-lbl {
+      font-size: 11px; font-weight: 800; padding: 4px 4px 5px;
+      text-align: center; line-height: 1.2; width: 100%;
+    }
+    .cell-del {
+      position: absolute; top: 3px; right: 3px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #e74c3c; color: #fff; border: none;
+      font-size: 14px; line-height: 20px; text-align: center;
+      cursor: pointer; display: none; align-items: center; justify-content: center;
+      font-family: 'Nunito', sans-serif; font-weight: 800; padding: 0;
+    }
+    .cell-edit-hint {
+      position: absolute; top: 3px; left: 3px;
+      width: 22px; height: 22px; border-radius: 5px;
+      background: rgba(30,45,61,0.72); color: #fff;
+      font-size: 12px; display: none; align-items: center;
+      justify-content: center; pointer-events: none;
+    }
+
+    /* ── Add-cell button ── */
+    #btn-addcell {
+      width: var(--cell); min-height: calc(var(--cell) + 30px);
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; gap: 5px;
+      border: 2.5px dashed #bbb; border-radius: var(--r);
+      background: #fff; cursor: pointer;
+      color: #aaa; font-size: 12px; font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+    }
+    #btn-addcell:hover { border-color: #666; color: #555; }
+    #btn-addcell .plus { font-size: 30px; font-weight: 400; line-height: 1; }
+
+    /* ── Empty state ── */
+    #empty { padding: 50px 20px; text-align: center; color: #bbb; width: 100%; }
+    #empty .ico { font-size: 56px; margin-bottom: 10px; }
+    #empty p { font-size: 14px; line-height: 1.5; }
+
+    /* ── Modal ── */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.52);
+      display: flex; align-items: center; justify-content: center; z-index: 200;
+    }
+    .modal {
+      background: #fff; border-radius: 16px; padding: 22px 24px;
+      width: 340px; max-width: 92vw; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    }
+    .modal h2 { font-size: 17px; font-weight: 800; color: #1e2d3d; margin-bottom: 16px; }
+    .fld { margin-bottom: 13px; }
+    .fld label { display: block; font-size: 10px; font-weight: 800; color: #888;
+      margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .fld input[type=text], .fld select {
+      width: 100%; padding: 8px 10px; border: 1.5px solid #ddd;
+      border-radius: 8px; font-size: 13px; font-family: 'Nunito', sans-serif;
+    }
+    .fld input:focus, .fld select:focus { outline: none; border-color: #7D3C98; }
+    .img-box {
+      width: 100%; height: 110px; border: 2px dashed #ddd; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; overflow: hidden; background: #fafafa; margin-bottom: 8px;
+    }
+    .img-box img { width: 100%; height: 100%; object-fit: contain; }
+    .img-box .ph { font-size: 13px; color: #bbb; text-align: center; padding: 10px; }
+    .mbtns { display: flex; gap: 8px; margin-top: 16px; }
+    .mbtn-ok {
+      flex: 1; padding: 10px; background: #1e2d3d; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 800;
+      cursor: pointer; font-family: 'Nunito', sans-serif;
+    }
+    .mbtn-ok:hover { background: #0f1b27; }
+    .mbtn-cancel {
+      flex: 1; padding: 10px; background: #eee; color: #555;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: 'Nunito', sans-serif;
+    }
+    .mbtn-cancel:hover { background: #e0e0e0; }
+  </style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div id="topbar">
+  <span class="app-title">🗣️ My Communicator</span>
+  <select id="voice-select"></select>
+  <button class="tbtn" id="btn-edit" onclick="toggleEdit()">✎ Edit</button>
+  <button class="tbtn" onclick="exportData()" title="Save backup">↓ Backup</button>
+  <button class="tbtn" onclick="document.getElementById('imp').click()" title="Load backup">↑ Restore</button>
+  <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(event)">
+</div>
+
+<!-- Phrase bar -->
+<div id="phrase-bar">
+  <div id="phrase-text"><span class="placeholder">Tap cells to build a phrase...</span></div>
+  <button class="phrase-btn" id="pbtn-del"   onclick="deleteLastPhrase()" title="Delete last word" disabled>&#9003;</button>
+  <button class="phrase-btn" id="pbtn-clear" onclick="clearPhrase()"      title="Clear all"        disabled>&#10005;</button>
+  <button class="phrase-btn" id="pbtn-speak" onclick="speakPhrase()"      title="Speak phrase"     disabled>&#9654;</button>
+</div>
+
+<!-- Category bar -->
+<div id="catbar">
+  <button class="ctab active" data-id="all"
+    style="border-color:#1e2d3d;color:#1e2d3d"
+    onclick="setCat('all',this)">All</button>
+  <button id="btn-addcat" onclick="openCatModal()">+ Category</button>
+</div>
+
+<!-- Grid -->
+<div id="grid">
+  <div id="empty">
+    <div class="ico">🗣️</div>
+    <p>Press <strong>Edit</strong> to start adding cells.<br>Your content saves automatically.</p>
+  </div>
+  <button id="btn-addcell" onclick="openCellModal()">
+    <span class="plus">+</span>Add cell
+  </button>
+</div>
+
+<!-- Cell modal -->
+<div class="overlay" id="cell-modal" style="display:none" onclick="if(event.target===this)closeCellModal()">
+  <div class="modal">
+    <h2 id="cmodal-title">Add cell</h2>
+    <div class="fld">
+      <label>Image</label>
+      <div class="img-box" id="img-preview" onclick="document.getElementById('img-file').click()">
+        <div class="ph">📷 Click to upload image</div>
+      </div>
+      <input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleImg(event)">
+    </div>
+    <div class="fld">
+      <label>Label (shown on cell)</label>
+      <input type="text" id="c-label" placeholder="e.g. Hello!">
+    </div>
+    <div class="fld">
+      <label>Text to speak in English</label>
+      <input type="text" id="c-speak" placeholder="e.g. Hello! (leave blank = same as label)">
+    </div>
+    <div class="fld">
+      <label>Category</label>
+      <select id="c-cat"></select>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-cancel" onclick="closeCellModal()">Cancel</button>
+      <button class="mbtn-ok" onclick="saveCell()">Add cell</button>
+    </div>
+  </div>
+</div>
+
+<!-- Category modal -->
+<div class="overlay" id="cat-modal" style="display:none" onclick="if(event.target===this)closeCatModal()">
+  <div class="modal">
+    <h2>New category</h2>
+    <div class="fld">
+      <label>Name</label>
+      <input type="text" id="cat-name" placeholder="e.g. Emotions">
+    </div>
+    <div class="fld">
+      <label>Color</label>
+      <input type="color" id="cat-color" value="#7D3C98"
+        style="width:100%;height:42px;border:none;border-radius:8px;cursor:pointer;padding:2px;">
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-cancel" onclick="closeCatModal()">Cancel</button>
+      <button class="mbtn-ok" onclick="saveCat()">Add category</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Storage keys ── */
+const K_CELLS = 'mycomm_cells_v1';
+const K_CATS  = 'mycomm_cats_v1';
+
+const DEFAULT_CATS = [
+  { id:'greetings',   label:'Greetings',    color:'#E67E22' },
+  { id:'social',      label:'Social words', color:'#C0392B' },
+  { id:'questions',   label:'Questions',    color:'#7D3C98' },
+  { id:'responses',   label:'Responses',    color:'#1A6FA0' },
+  { id:'numbers',     label:'Numbers',      color:'#1A7A4A' },
+  { id:'punctuation', label:'Punctuation',  color:'#555555' },
+];
+
+const DEFAULT_CELLS = [
+  { id:'d1',  label:'Hello!',            speak:'Hello!',            catId:'greetings',   arasaacSearch:{lang:'en',term:'hello'} },
+  { id:'d2',  label:'Goodbye!',          speak:'Goodbye!',          catId:'greetings',   arasaacSearch:{lang:'en',term:'goodbye'} },
+  { id:'d3',  label:'Yes',               speak:'Yes',               catId:'social',      arasaacSearch:{lang:'en',term:'yes'} },
+  { id:'d4',  label:'No',                speak:'No',                catId:'social',      arasaacSearch:{lang:'en',term:'no'} },
+  { id:'d5',  label:'Please',            speak:'Please',            catId:'social',      arasaacSearch:{lang:'en',term:'please'} },
+  { id:'d6',  label:'Thank you!',        speak:'Thank you!',        catId:'social',      arasaacSearch:{lang:'en',term:'thank you'} },
+  { id:'d7',  label:'How are you?',      speak:'How are you?',      catId:'questions',   arasaacId:11597 },
+  { id:'d8',  label:"What's your name?", speak:"What's your name?", catId:'questions',   arasaacId:27353 },
+  { id:'d9',  label:"I'm fine!",         speak:"I'm fine!",         catId:'responses',   arasaacId:13630 },
+  { id:'d10', label:"I'm [name]",        speak:'I am',              catId:'responses',   arasaacId:6632  },
+  { id:'d11', label:'One',               speak:'One',               catId:'numbers',     arasaacId:7291  },
+  { id:'d12', label:'Two',               speak:'Two',               catId:'numbers',     arasaacId:7027  },
+  { id:'d13', label:'Three',             speak:'Three',             catId:'numbers',     arasaacId:7283  },
+  { id:'d14', label:'Four',              speak:'Four',              catId:'numbers',     arasaacId:7005  },
+  { id:'d15', label:'Five',              speak:'Five',              catId:'numbers',     arasaacId:6979  },
+  { id:'d16', label:'.',  speak:'.',  catId:'punctuation', isPunct:true },
+  { id:'d17', label:',',  speak:',',  catId:'punctuation', isPunct:true },
+  { id:'d18', label:'?',  speak:'?',  catId:'punctuation', isPunct:true },
+  { id:'d19', label:'!',  speak:'!',  catId:'punctuation', isPunct:true },
+  { id:'d20', label:'...',speak:'...', catId:'punctuation', isPunct:true },
+];
+
+/* ── State ── */
+let cells      = [];
+let cats       = [];
+let editMode   = false;
+let activeCat  = 'all';
+let pendingImg = null;
+let selVoice   = null;
+let editingCellId = null;
+
+/* ── Load / Save ── */
+function load() {
+  try {
+    cats  = JSON.parse(localStorage.getItem(K_CATS))  || [...DEFAULT_CATS];
+    cells = JSON.parse(localStorage.getItem(K_CELLS)) || [...DEFAULT_CELLS];
+  } catch {
+    cats = [...DEFAULT_CATS]; cells = [...DEFAULT_CELLS];
+  }
+}
+function save() {
+  localStorage.setItem(K_CATS,  JSON.stringify(cats));
+  localStorage.setItem(K_CELLS, JSON.stringify(cells));
+}
+
+/* ── Voice ── */
+const vsel = document.getElementById('voice-select');
+function fillVoices() {
+  const en = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+  if (!en.length) return;
+  vsel.innerHTML = '';
+  en.forEach((v,i) => {
+    const o = document.createElement('option');
+    o.value = i; o.textContent = v.name + ' (' + v.lang + ')';
+    vsel.appendChild(o);
+  });
+  const best = en.findIndex(v =>
+    /google uk english female/i.test(v.name) ||
+    /google uk english male/i.test(v.name)   ||
+    /google us english/i.test(v.name)        ||
+    /samantha/i.test(v.name) || /daniel/i.test(v.name)
+  );
+  vsel.selectedIndex = best >= 0 ? best : 0;
+  selVoice = en[vsel.selectedIndex];
+  vsel.onchange = () => { selVoice = en[parseInt(vsel.value)]; };
+}
+fillVoices();
+speechSynthesis.addEventListener('voiceschanged', fillVoices);
+
+function speak(text, el) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.85; u.pitch = 1.05;
+    if (selVoice) u.voice = selVoice;
+    speechSynthesis.speak(u);
+    if (el) {
+      el.classList.add('speaking');
+      u.onend = () => el.classList.remove('speaking');
+      setTimeout(() => el.classList.remove('speaking'), 2500);
+    }
+  }));
+}
+
+/* ── Phrase bar ── */
+let phraseTokens = []; // [{label, speak, isPunct}]
+
+function renderPhrase() {
+  const el = document.getElementById('phrase-text');
+  const hasText = phraseTokens.length > 0;
+  el.classList.toggle('has-text', hasText);
+
+  if (!hasText) {
+    el.innerHTML = '<span class="placeholder">Tap cells to build a phrase...</span>';
+  } else {
+    // Build display string: space before words, no space before punctuation
+    let display = '';
+    phraseTokens.forEach((t, i) => {
+      if (i === 0 || t.isPunct) display += t.label;
+      else display += ' ' + t.label;
+    });
+    el.textContent = display;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  document.getElementById('pbtn-del').disabled   = !hasText;
+  document.getElementById('pbtn-clear').disabled = !hasText;
+  document.getElementById('pbtn-speak').disabled = !hasText;
+}
+
+function addToPhrase(label, speakText, isPunct) {
+  phraseTokens.push({ label, speak: speakText || label, isPunct: !!isPunct });
+  renderPhrase();
+}
+
+function deleteLastPhrase() {
+  phraseTokens.pop();
+  renderPhrase();
+}
+
+function clearPhrase() {
+  phraseTokens = [];
+  renderPhrase();
+}
+
+function speakPhrase() {
+  if (!phraseTokens.length) return;
+  // Build natural spoken sentence: join with spaces, punctuation attaches
+  let spoken = '';
+  phraseTokens.forEach((t, i) => {
+    if (i === 0 || t.isPunct) spoken += t.speak;
+    else spoken += ' ' + t.speak;
+  });
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const u = new SpeechSynthesisUtterance(spoken);
+    u.lang = 'en-US'; u.rate = 0.85; u.pitch = 1.05;
+    if (selVoice) u.voice = selVoice;
+    speechSynthesis.speak(u);
+  }));
+}
+function toggleEdit() {
+  editMode = !editMode;
+  const btn = document.getElementById('btn-edit');
+  btn.textContent = editMode ? '✓ Done' : '✎ Edit';
+  btn.classList.toggle('on', editMode);
+  document.getElementById('btn-addcat').style.display  = editMode ? 'block' : 'none';
+  document.getElementById('btn-addcell').style.display = editMode ? 'flex'  : 'none';
+  document.querySelectorAll('.cell-del').forEach(d => {
+    d.style.display = editMode ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.cell-edit-hint').forEach(h => {
+    h.style.display = editMode ? 'flex' : 'none';
+  });
+}
+
+/* ── Category tabs ── */
+function renderCats() {
+  const bar = document.getElementById('catbar');
+  bar.querySelectorAll('.ctab:not([data-id=all])').forEach(t => t.remove());
+  const addBtn = document.getElementById('btn-addcat');
+  cats.forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'ctab' + (activeCat === cat.id ? ' active' : '');
+    b.dataset.id = cat.id;
+    b.textContent = cat.label;
+    b.style.borderColor = cat.color;
+    b.style.color = activeCat === cat.id ? '#fff' : cat.color;
+    if (activeCat === cat.id) b.style.background = cat.color;
+    b.onclick = () => setCat(cat.id, b);
+    bar.insertBefore(b, addBtn);
+  });
+  const allTab = bar.querySelector('[data-id=all]');
+  if (activeCat === 'all') {
+    allTab.style.background = '#1e2d3d'; allTab.style.color = '#fff';
+    allTab.classList.add('active');
+  } else {
+    allTab.style.background = '#fff'; allTab.style.color = '#1e2d3d';
+    allTab.classList.remove('active');
+  }
+}
+
+function setCat(id) {
+  activeCat = id;
+  renderCats();
+  renderGrid();
+}
+
+/* ── Grid ── */
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const addBtn = document.getElementById('btn-addcell');
+  grid.querySelectorAll('.cell').forEach(c => c.remove());
+
+  const visible = activeCat === 'all'
+    ? cells
+    : cells.filter(c => c.catId === activeCat);
+
+  const empty = document.getElementById('empty');
+  empty.style.display = (visible.length === 0 && !editMode) ? 'block' : 'none';
+
+  visible.forEach(cell => grid.insertBefore(makeCell(cell), addBtn));
+  grid.appendChild(addBtn);
+}
+
+function picUrl(id) {
+  return 'https://static.arasaac.org/pictograms/' + id + '/' + id + '_300.png';
+}
+
+async function fetchArasaacId(search) {
+  try {
+    const res = await fetch('https://api.arasaac.org/api/pictograms/' + search.lang + '/search/' + encodeURIComponent(search.term));
+    const data = await res.json();
+    return Array.isArray(data) && data.length ? data[0]._id : null;
+  } catch { return null; }
+}
+
+function makeCell(data) {
+  const cat = cats.find(c => c.id === data.catId) || { color: '#888' };
+  const el = document.createElement('div');
+  el.className = 'cell';
+  el.style.borderColor = cat.color;
+  el.dataset.id = data.id;
+
+  if (data.img) {
+    // Uploaded base64 image
+    const img = document.createElement('img');
+    img.className = 'cell-img'; img.src = data.img; img.alt = data.label;
+    el.appendChild(img);
+  } else if (data.arasaacId) {
+    // Direct ARASAAC ID
+    const img = document.createElement('img');
+    img.className = 'cell-img'; img.alt = data.label;
+    img.src = picUrl(data.arasaacId);
+    img.onerror = () => { img.replaceWith(makePlaceholder()); };
+    el.appendChild(img);
+  } else if (data.arasaacSearch) {
+    // ARASAAC keyword search
+    const ph = makePlaceholder();
+    el.appendChild(ph);
+    fetchArasaacId(data.arasaacSearch).then(id => {
+      if (!id) return;
+      const img = document.createElement('img');
+      img.className = 'cell-img'; img.alt = data.label;
+      img.src = picUrl(id);
+      img.onload = () => ph.replaceWith(img);
+    });
+  } else {
+    el.appendChild(makePlaceholder());
+  }
+
+  const lbl = document.createElement('span');
+  lbl.className = 'cell-lbl';
+  lbl.style.color = cat.color;
+  lbl.textContent = data.label;
+  el.appendChild(lbl);
+
+  const del = document.createElement('button');
+  del.className = 'cell-del';
+  del.textContent = '×';
+  del.style.display = editMode ? 'flex' : 'none';
+  del.onclick = e => { e.stopPropagation(); deleteCell(data.id); };
+  el.appendChild(del);
+
+  const hint = document.createElement('div');
+  hint.className = 'cell-edit-hint';
+  hint.textContent = '✏';
+  hint.style.display = editMode ? 'flex' : 'none';
+  el.appendChild(hint);
+
+  el.onclick = () => {
+    if (editMode) { openCellModal(data.id); return; }
+    speak(data.speak || data.label, el);
+    addToPhrase(data.label, data.speak || data.label, data.isPunct);
+  };
+  return el;
+}
+
+function makePlaceholder() {
+  const ph = document.createElement('div');
+  ph.className = 'cell-noimg'; ph.textContent = '📷';
+  return ph;
+}
+
+function deleteCell(id) {
+  if (!confirm('Delete this cell?')) return;
+  cells = cells.filter(c => c.id !== id);
+  save(); renderGrid();
+}
+
+/* ── Add / Edit cell modal ── */
+function openCellModal(editId) {
+  editingCellId = editId || null;
+  pendingImg = null;
+  document.getElementById('img-file').value = '';
+
+  const title   = document.getElementById('cmodal-title');
+  const saveBtn = document.querySelector('#cell-modal .mbtn-ok');
+  const box     = document.getElementById('img-preview');
+  const sel     = document.getElementById('c-cat');
+
+  sel.innerHTML = '';
+  cats.forEach(cat => {
+    const o = document.createElement('option');
+    o.value = cat.id; o.textContent = cat.label;
+    sel.appendChild(o);
+  });
+
+  if (editingCellId) {
+    // ── Edit mode ──
+    const c = cells.find(x => x.id === editingCellId);
+    title.textContent    = 'Edit cell';
+    saveBtn.textContent  = 'Save changes';
+    document.getElementById('c-label').value = c.label;
+    document.getElementById('c-speak').value = c.speak || '';
+    // Pre-select category
+    sel.value = c.catId;
+    // Show current image
+    box.innerHTML = '';
+    if (c.img) {
+      const img = document.createElement('img'); img.src = c.img;
+      box.appendChild(img);
+    } else if (c.arasaacId) {
+      const img = document.createElement('img'); img.src = picUrl(c.arasaacId);
+      box.appendChild(img);
+    } else {
+      box.innerHTML = '<div class="ph">📷 Click to change image</div>';
+    }
+  } else {
+    // ── Add mode ──
+    title.textContent   = 'Add cell';
+    saveBtn.textContent = 'Add cell';
+    document.getElementById('c-label').value = '';
+    document.getElementById('c-speak').value = '';
+    box.innerHTML = '<div class="ph">📷 Click to upload image</div>';
+    if (activeCat !== 'all') sel.value = activeCat;
+  }
+
+  document.getElementById('cell-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('c-label').focus(), 80);
+}
+function closeCellModal() {
+  document.getElementById('cell-modal').style.display = 'none';
+  pendingImg = null;
+  editingCellId = null;
+}
+
+function handleImg(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 150;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0,0,150,150);
+      const scale = Math.min(150/img.width, 150/img.height);
+      const w = img.width * scale, h = img.height * scale;
+      ctx.drawImage(img, (150-w)/2, (150-h)/2, w, h);
+      pendingImg = canvas.toDataURL('image/png', 0.9);
+      const box = document.getElementById('img-preview');
+      box.innerHTML = '';
+      const prev = document.createElement('img');
+      prev.src = pendingImg;
+      box.appendChild(prev);
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveCell() {
+  const label      = document.getElementById('c-label').value.trim();
+  const speak_text = document.getElementById('c-speak').value.trim() || label;
+  const catId      = document.getElementById('c-cat').value;
+  if (!label) { alert('Please enter a label.'); return; }
+
+  if (editingCellId) {
+    const idx = cells.findIndex(c => c.id === editingCellId);
+    if (idx !== -1) {
+      const ex = cells[idx];
+      cells[idx] = {
+        ...ex, label, speak: speak_text, catId,
+        img:          pendingImg || ex.img,
+        arasaacId:    pendingImg ? undefined : ex.arasaacId,
+        arasaacSearch:pendingImg ? undefined : ex.arasaacSearch,
+      };
+    }
+    editingCellId = null;
+  } else {
+    cells.push({ id:'c'+Date.now(), label, speak:speak_text, img:pendingImg||null, catId });
+  }
+  save(); closeCellModal(); renderGrid();
+}
+/* ── Category modal ── */
+function openCatModal() {
+  document.getElementById('cat-name').value = '';
+  document.getElementById('cat-color').value = '#7D3C98';
+  document.getElementById('cat-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('cat-name').focus(), 80);
+}
+function closeCatModal() {
+  document.getElementById('cat-modal').style.display = 'none';
+}
+function saveCat() {
+  const name = document.getElementById('cat-name').value.trim();
+  const color = document.getElementById('cat-color').value;
+  if (!name) { alert('Enter a name.'); return; }
+  cats.push({ id:'cat'+Date.now(), label:name, color });
+  save(); closeCatModal(); renderCats();
+}
+
+/* ── Export / Import ── */
+function exportData() {
+  const blob = new Blob([JSON.stringify({cells,cats,v:1},null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'communicator-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+}
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (!d.cells || !d.cats) { alert('Invalid file.'); return; }
+      if (!confirm('This will replace all current data. Continue?')) return;
+      cells = d.cells; cats = d.cats;
+      save(); renderCats(); renderGrid();
+    } catch { alert('Could not read the file.'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+/* ── Init ── */
+load();
+renderCats();
+renderGrid();
+</script>
+</body>
+</html>

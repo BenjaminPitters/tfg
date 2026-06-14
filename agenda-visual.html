@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda Visual de Sesión</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --c1:#7C3AED; --c1l:#EDE9FE;
+      --c2:#16A34A; --c2l:#DCFCE7;
+      --c3:#D97706; --c3l:#FEF3C7;
+      --c4:#2563EB; --c4l:#DBEAFE;
+      --c5:#7C3AED; --c5l:#EDE9FE;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: #F1F5F9; min-height: 100vh; }
+
+    /* ── Top bar ── */
+    #topbar {
+      background: #1E293B; color: #fff;
+      padding: 10px 20px; display: flex; align-items: center; gap: 12px;
+    }
+    #topbar h1 { font-size: 15px; font-weight: 800; flex: 1; }
+    .top-btn {
+      background: rgba(255,255,255,0.15); color: #fff; border: none;
+      padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 700;
+      cursor: pointer; font-family: 'Nunito', sans-serif;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+    .top-btn:hover { background: rgba(255,255,255,0.25); }
+    #btn-reset { background: rgba(239,68,68,0.3); }
+    #btn-reset:hover { background: rgba(239,68,68,0.5); }
+
+    /* ── Interactive agenda ── */
+    #agenda {
+      display: flex;
+      flex-direction: row;
+      gap: 14px;
+      padding: 24px;
+      height: calc(100vh - 52px);
+    }
+
+    .moment {
+      flex: 1;
+      border-radius: 18px;
+      background: #fff;
+      border: 3px solid #E2E8F0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s, background 0.2s;
+      overflow: hidden;
+      position: relative;
+      user-select: none;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      gap: 10px;
+      padding: 20px 12px 24px;
+    }
+
+    .moment:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.1); }
+
+    .moment.active {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+    }
+    .moment.done { opacity: 0.4; transform: none; }
+
+    .m-bar { position: absolute; top: 0; left: 0; right: 0; height: 10px; }
+
+    .m-badge {
+      position: absolute; top: 18px; right: 10px;
+      font-size: 10px; font-weight: 800; color: #fff;
+      padding: 2px 9px; border-radius: 20px;
+      display: none; white-space: nowrap;
+    }
+    .moment.active .m-badge { display: block; }
+
+    .m-done-icon {
+      position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      font-size: 22px; display: none;
+    }
+    .moment.done .m-done-icon { display: block; }
+
+    .m-icon { font-size: 64px; line-height: 1; margin-top: 6px; }
+
+    .m-title {
+      font-size: 15px; font-weight: 900; color: #1E293B;
+      text-align: center; line-height: 1.3;
+    }
+
+    .m-circle {
+      width: 58px; height: 58px; border-radius: 50%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      margin-top: 6px; flex-shrink: 0;
+    }
+    .m-circle .mn { font-size: 22px; font-weight: 900; color: #fff; line-height: 1; }
+    .m-circle .ml { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.85); }
+
+    /* ── Print layout: landscape, horizontal ── */
+    #print-layout { display: none; }
+
+    @media print {
+      body { background: #fff; }
+      #topbar, #agenda { display: none !important; }
+      #print-layout {
+        display: flex !important;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        padding: 14mm 10mm;
+        height: 100vh;
+        font-family: 'Nunito', sans-serif;
+      }
+
+      .p-card {
+        width: 44mm; height: 60mm;
+        border: 3px solid;
+        border-radius: 5mm;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 4mm; padding: 4mm;
+        flex-shrink: 0;
+      }
+
+      .p-icon { font-size: 36pt; line-height: 1; }
+
+      .p-name {
+        font-size: 10pt; font-weight: 900;
+        text-align: center; line-height: 1.2;
+      }
+
+      .p-arrow {
+        font-size: 22pt; color: #94A3B8;
+        flex-shrink: 0; padding: 0 4mm;
+        font-weight: 900;
+      }
+
+      @page { margin: 0; size: A4 landscape; }
+    }
+
+    /* ── MOBILE: portrait / narrow screens ── */
+    @media (max-width: 700px) {
+      #topbar { padding: 10px 12px; gap: 8px; }
+      #topbar h1 { font-size: 12px; }
+      .top-btn { padding: 6px 10px; font-size: 11px; }
+
+      #agenda {
+        flex-direction: column;
+        height: auto;
+        min-height: calc(100vh - 52px);
+        padding: 12px;
+        gap: 10px;
+      }
+
+      .moment {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 14px 16px 14px 22px;
+        gap: 14px;
+        border-radius: 14px;
+        min-height: 76px;
+      }
+
+      /* No lift effect on touch */
+      .moment:hover { transform: none; box-shadow: none; }
+      .moment.active { transform: none; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+
+      /* Vertical color bar on left side */
+      .m-bar {
+        top: 0; left: 0; bottom: 0; right: auto;
+        width: 7px; height: 100%;
+        border-radius: 14px 0 0 14px;
+      }
+
+      .m-badge { top: 8px; right: 8px; font-size: 9px; padding: 2px 7px; }
+
+      .m-done-icon {
+        top: 50%; left: auto; right: 14px;
+        transform: translateY(-50%);
+        font-size: 20px;
+      }
+
+      .m-icon { font-size: 38px; margin-top: 0; flex-shrink: 0; }
+
+      .m-title {
+        flex: 1; font-size: 16px; font-weight: 900;
+        text-align: left; line-height: 1.25;
+      }
+
+      .m-circle {
+        width: 52px; height: 52px;
+        margin-top: 0; flex-shrink: 0;
+      }
+      .m-circle .mn { font-size: 19px; }
+    }
+
+    /* Hide print button on mobile */
+    @media (max-width: 700px) {
+      #topbar button:last-child { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div id="topbar">
+  <h1>🗓️ Agenda Visual de Sesión</h1>
+  <button class="top-btn" id="btn-reset" onclick="resetAll()">↺ Reiniciar</button>
+  <button class="top-btn" onclick="window.print()">🖨️ Imprimir</button>
+</div>
+
+<!-- Interactive agenda (screen) -->
+<div id="agenda">
+
+  <div class="moment" id="m1" onclick="activate(1)">
+    <div class="m-bar" style="background:var(--c1)"></div>
+    <div class="m-badge" style="background:var(--c1)">● Ahora</div>
+    <div class="m-done-icon">✓</div>
+    <div class="m-icon">🎵</div>
+    <div class="m-title">Apertura<br>Canción</div>
+    <div class="m-circle" style="background:var(--c1)">
+      <span class="mn">8</span><span class="ml">min</span>
+    </div>
+  </div>
+
+  <div class="moment" id="m2" onclick="activate(2)">
+    <div class="m-bar" style="background:var(--c2)"></div>
+    <div class="m-badge" style="background:var(--c2)">● Ahora</div>
+    <div class="m-done-icon">✓</div>
+    <div class="m-icon">📖</div>
+    <div class="m-title">Cuento</div>
+    <div class="m-circle" style="background:var(--c2)">
+      <span class="mn">10</span><span class="ml">min</span>
+    </div>
+  </div>
+
+  <div class="moment" id="m3" onclick="activate(3)">
+    <div class="m-bar" style="background:var(--c3)"></div>
+    <div class="m-badge" style="background:var(--c3)">● Ahora</div>
+    <div class="m-done-icon">✓</div>
+    <div class="m-icon">⭐</div>
+    <div class="m-title">TPR<br>Vocabulario</div>
+    <div class="m-circle" style="background:var(--c3)">
+      <span class="mn">10</span><span class="ml">min</span>
+    </div>
+  </div>
+
+  <div class="moment" id="m4" onclick="activate(4)">
+    <div class="m-bar" style="background:var(--c4)"></div>
+    <div class="m-badge" style="background:var(--c4)">● Ahora</div>
+    <div class="m-done-icon">✓</div>
+    <div class="m-icon">💬</div>
+    <div class="m-title">Actividad<br>comunicativa</div>
+    <div class="m-circle" style="background:var(--c4)">
+      <span class="mn">12</span><span class="ml">min</span>
+    </div>
+  </div>
+
+  <div class="moment" id="m5" onclick="activate(5)">
+    <div class="m-bar" style="background:var(--c5)"></div>
+    <div class="m-badge" style="background:var(--c5)">● Ahora</div>
+    <div class="m-done-icon">✓</div>
+    <div class="m-icon">🎵</div>
+    <div class="m-title">Cierre<br>Canción</div>
+    <div class="m-circle" style="background:var(--c5)">
+      <span class="mn">5</span><span class="ml">min</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Print layout: horizontal, landscape -->
+<div id="print-layout">
+  <div class="p-card" style="border-color:var(--c1)">
+    <div class="p-icon">🎵</div>
+    <div class="p-name" style="color:var(--c1)">Apertura<br>Canción</div>
+  </div>
+  <div class="p-arrow">→</div>
+  <div class="p-card" style="border-color:var(--c2)">
+    <div class="p-icon">📖</div>
+    <div class="p-name" style="color:var(--c2)">Cuento</div>
+  </div>
+  <div class="p-arrow">→</div>
+  <div class="p-card" style="border-color:var(--c3)">
+    <div class="p-icon">⭐</div>
+    <div class="p-name" style="color:var(--c3)">TPR<br>Vocabulario</div>
+  </div>
+  <div class="p-arrow">→</div>
+  <div class="p-card" style="border-color:var(--c4)">
+    <div class="p-icon">💬</div>
+    <div class="p-name" style="color:var(--c4)">Actividad<br>comunicativa</div>
+  </div>
+  <div class="p-arrow">→</div>
+  <div class="p-card" style="border-color:var(--c5)">
+    <div class="p-icon">🎵</div>
+    <div class="p-name" style="color:var(--c5)">Cierre<br>Canción</div>
+  </div>
+</div>
+
+<script>
+/* ── Colors ── */
+const COLORS = { 1:'#7C3AED', 2:'#16A34A', 3:'#D97706', 4:'#2563EB', 5:'#7C3AED' };
+const LIGHTS  = { 1:'#EDE9FE', 2:'#DCFCE7', 3:'#FEF3C7', 4:'#DBEAFE', 5:'#EDE9FE' };
+let current = 0;
+
+/* ── Audio ── */
+let audioCtx = null;
+function ac() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+
+// M1 & M5: ascending / descending musical arpeggio (C-E-G)
+function playArpeggio(asc) {
+  const ctx = ac();
+  const notes = asc ? [261.63, 329.63, 392.00] : [392.00, 329.63, 261.63];
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = 'sine'; osc.frequency.value = freq;
+    osc.connect(g); g.connect(ctx.destination);
+    const t = ctx.currentTime + i * 0.13;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.28, t + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    osc.start(t); osc.stop(t + 0.5);
+  });
+}
+
+// M2: soft bell chime (storytelling)
+function playBell() {
+  const ctx = ac();
+  [880, 1108.73].forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = 'sine'; osc.frequency.value = freq;
+    osc.connect(g); g.connect(ctx.destination);
+    const t = ctx.currentTime + i * 0.18;
+    g.gain.setValueAtTime(0.22, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+    osc.start(t); osc.stop(t + 1.2);
+  });
+}
+
+// M3: three rhythmic claps (movement/TPR)
+function playClaps() {
+  const ctx = ac();
+  [0, 0.22, 0.44].forEach(delay => {
+    const bufLen = Math.floor(ctx.sampleRate * 0.08);
+    const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufLen * 0.25));
+    }
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const flt = ctx.createBiquadFilter();
+    flt.type = 'bandpass'; flt.frequency.value = 1200; flt.Q.value = 0.8;
+    const g = ctx.createGain(); g.gain.value = 1.2;
+    src.connect(flt); flt.connect(g); g.connect(ctx.destination);
+    src.start(ctx.currentTime + delay);
+  });
+}
+
+// M4: friendly "pop" communication sound
+function playPop() {
+  const ctx = ac();
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(900, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(350, ctx.currentTime + 0.12);
+  osc.connect(g); g.connect(ctx.destination);
+  g.gain.setValueAtTime(0.3, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+  osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.18);
+}
+
+const SOUNDS = {
+  1: () => playArpeggio(true),
+  2: () => playBell(),
+  3: () => playClaps(),
+  4: () => playPop(),
+  5: () => playArpeggio(false),
+};
+
+/* ── Logic ── */
+function activate(n) {
+  SOUNDS[n]();
+
+  if (current === n) {
+    // Clicking active again → mark done
+    const el = document.getElementById('m'+n);
+    el.classList.remove('active');
+    el.classList.add('done');
+    el.style.background = '#fff';
+    el.style.borderColor = '#E2E8F0';
+    current = 0;
+    return;
+  }
+
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('m'+i);
+    el.classList.remove('active','done');
+    el.style.background = '#fff';
+    el.style.borderColor = '#E2E8F0';
+    if (i < n) {
+      el.classList.add('done');
+    } else if (i === n) {
+      el.classList.add('active');
+      el.style.background = LIGHTS[i];
+      el.style.borderColor = COLORS[i];
+    }
+  }
+  current = n;
+}
+
+function resetAll() {
+  current = 0;
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('m'+i);
+    el.classList.remove('active','done');
+    el.style.background = '#fff';
+    el.style.borderColor = '#E2E8F0';
+  }
+}
+</script>
+</body>
+</html>

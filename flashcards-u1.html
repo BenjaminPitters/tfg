@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>U1 Flashcards - Hello, my world!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'OpenDyslexic';
+      src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/open-dyslexic-regular.woff2') format('woff2'),
+           url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/open-dyslexic-regular.woff') format('woff'),
+           url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/OpenDyslexic-Regular.otf') format('opentype');
+      font-weight: normal;
+    }
+    @font-face {
+      font-family: 'OpenDyslexic';
+      src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/open-dyslexic-bold.woff2') format('woff2'),
+           url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/open-dyslexic-bold.woff') format('woff'),
+           url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/OpenDyslexic-Bold.otf') format('opentype');
+      font-weight: bold;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: #eef1f5; min-height: 100vh; }
+
+    /* ── Viewer ── */
+    #viewer {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 24px;
+    }
+
+    .v-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .v-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #7F8C8D;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    #voice-select {
+      font-size: 16px;
+      font-family: 'Nunito', sans-serif;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      padding: 3px 6px;
+      max-width: 180px;
+      -webkit-appearance: none;
+    }
+
+    /* Card row */
+    .card-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .nav-btn {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      border: none;
+      background: #2C3E50;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: 'Nunito', sans-serif;
+      transition: background 0.15s;
+      line-height: 1;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-btn:hover { background: #1A252F; }
+    .nav-btn:disabled { background: #ccc; cursor: default; }
+
+    /* Card */
+    .card {
+      width: 300px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 10px 36px rgba(0,0,0,0.13);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 20px 24px;
+      gap: 14px;
+      position: relative;
+    }
+
+    .color-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 8px;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .img-box {
+      width: 220px; height: 220px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 14px;
+      background: #f8f8f8;
+      border: 1px solid #eee;
+      margin-top: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .img-box img { width: 220px; height: 220px; object-fit: contain; }
+
+    .spin {
+      width: 32px; height: 32px;
+      border: 3px solid #eee; border-top-color: #bbb;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Word in OpenDyslexic */
+    .card-word {
+      font-family: 'OpenDyslexic', 'Open Dyslexic', sans-serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #2C3E50;
+      text-align: center;
+      line-height: 1.3;
+      width: 100%;
+    }
+
+    /* Speak button BELOW the word */
+    .speak-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2.5px solid;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      transition: background 0.12s;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .speak-btn:hover { background: #f0f0f0; }
+
+    /* Counter + controls */
+    .v-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .counter {
+      font-size: 15px;
+      font-weight: 800;
+      color: #2C3E50;
+    }
+    .print-btn {
+      background: #2C3E50;
+      color: #fff;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+    }
+    .print-btn:hover { background: #1A252F; }
+    .kb-hint    { font-size: 11px; color: #bbb; }
+    #load-notice { font-size: 11px; color: #aaa; font-weight: 700; }
+
+    /* ── Print: 4 per A4 ── */
+    #print-layout { display: none; }
+
+    @media print {
+      #viewer { display: none !important; }
+      #print-layout { display: block !important; }
+
+      .print-page {
+        width: 210mm;
+        height: 297mm;
+        padding: 10mm;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 6mm;
+        page-break-after: always;
+        page-break-inside: avoid;
+      }
+
+      .pcard {
+        border: 1.5px solid #ddd;
+        border-radius: 5mm;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 5mm;
+        gap: 3mm;
+        overflow: hidden;
+        break-inside: avoid;
+        position: relative;
+      }
+
+      .pcard-bar {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2.5mm;
+        border-radius: 5mm 5mm 0 0;
+      }
+
+      .pcard img {
+        width: 52mm; height: 52mm;
+        object-fit: contain;
+      }
+
+      .pcard-word {
+        font-family: 'OpenDyslexic', 'Open Dyslexic', sans-serif;
+        font-size: 14pt;
+        font-weight: bold;
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      @page { margin: 0; size: A4 portrait; }
+    }
+
+    .nav-row { display: none; }
+    @media (max-width: 560px) {
+      #viewer { padding: 16px 12px; gap: 12px; }
+
+      /* Stack nav buttons below card */
+      .card-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* Nav buttons side by side below card */
+      .card-row::after {
+        content: '';
+        display: none;
+      }
+
+      .card { width: min(90vw, 300px); padding: 16px 16px 20px; }
+
+      .img-box { width: min(72vw, 220px); height: min(72vw, 220px); }
+      .img-box img { width: 100%; height: 100%; }
+
+      .card-word { font-size: 20px; }
+
+      /* Reorder: hide side nav, show row of buttons below */
+      .card-row .nav-btn { display: none; }
+
+      .nav-row { display: flex; gap: 20px; align-items: center; justify-content: center; }
+
+      .v-top { flex-wrap: wrap; justify-content: center; }
+      #voice-select { max-width: 100%; }
+
+      .kb-hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Interactive viewer ── -->
+<div id="viewer">
+  <div class="v-top">
+    <span class="v-title">U1 · Hello, my world! · Flashcards</span>
+    <select id="voice-select"></select>
+  </div>
+
+  <div class="card-row">
+    <button class="nav-btn" id="btn-prev" onclick="prevCard()">&#8249;</button>
+
+    <div class="card" id="card">
+      <div class="color-bar" id="color-bar"></div>
+      <div class="img-box" id="img-box">
+        <div class="spin"></div>
+      </div>
+      <div class="card-word" id="card-word"></div>
+      <button class="speak-btn" id="speak-btn" onclick="speakCurrent()">&#128266;</button>
+    </div>
+
+    <button class="nav-btn" id="btn-next" onclick="nextCard()">&#8250;</button>
+  </div>
+
+  <!-- Mobile nav row (shown only on small screens) -->
+  <div class="nav-row">
+    <button class="nav-btn" onclick="prevCard()" id="btn-prev-m">&#8249;</button>
+    <button class="nav-btn" onclick="nextCard()" id="btn-next-m">&#8250;</button>
+  </div>
+
+  <div class="v-bottom">
+    <span class="counter" id="counter">1 / 15</span>
+    <button class="print-btn" onclick="window.print()">&#128424; Print (4 per A4)</button>
+    <p class="kb-hint">&#8592; &#8594; navigate &nbsp;|&nbsp; S to speak</p>
+    <p id="load-notice">Loading images from ARASAAC...</p>
+  </div>
+</div>
+
+<!-- ── Print layout ── -->
+<div id="print-layout"></div>
+
+<script>
+const CARDS = [
+  { word:"Hello!",            speak:"Hello!",             color:"#E67E22", id:6522  },
+  { word:"Goodbye!",          speak:"Goodbye!",           color:"#E67E22", id:6028  },
+  { word:"Yes",               speak:"Yes",                color:"#C0392B", id:5584  },
+  { word:"No",                speak:"No",                 color:"#C0392B", id:5526  },
+  { word:"Please",            speak:"Please",             color:"#C0392B", id:8194  },
+  { word:"Thank you!",        speak:"Thank you!",         color:"#C0392B", id:31206 },
+  { word:"How are you?",      speak:"How are you?",       color:"#7D3C98", id:11597 },
+  { word:"What's your name?", speak:"What's your name?",  color:"#7D3C98", id:27353 },
+  { word:"I'm fine!",         speak:"I'm fine!",          color:"#1A6FA0", id:13630 },
+  { word:"I'm [name]",        speak:"I am",               color:"#1A6FA0", id:6632  },
+  { word:"One",           speak:"One",                color:"#1A7A4A", id:7291  },
+  { word:"Two",           speak:"Two",                color:"#1A7A4A", id:7027  },
+  { word:"Three",         speak:"Three",              color:"#1A7A4A", id:7283  },
+  { word:"Four",          speak:"Four",               color:"#1A7A4A", id:7005  },
+  { word:"Five",          speak:"Five",               color:"#1A7A4A", id:6979  },
+];
+
+const imgUrls = new Array(CARDS.length).fill(null);
+
+function picUrl(id) {
+  return "https://static.arasaac.org/pictograms/" + id + "/" + id + "_300.png";
+}
+
+function loadAllImages() {
+  // All IDs are hardcoded — no API calls needed, works on mobile and offline
+  CARDS.forEach((c, i) => { if (c.id) imgUrls[i] = picUrl(c.id); });
+  document.getElementById("load-notice").style.display = "none";
+  buildPrint();
+  showCard(current);
+}
+
+/* ── Voice ── */
+const voiceSel = document.getElementById("voice-select");
+let selVoice = null;
+
+function fillVoices() {
+  const all   = speechSynthesis.getVoices();
+  if (!all.length) return;
+
+  // Prefer English voices, fall back to all voices
+  const en = all.filter(v => v.lang.startsWith("en"));
+  const list = en.length ? en : all;
+
+  voiceSel.innerHTML = "";
+  list.forEach((v, i) => {
+    const o = document.createElement("option");
+    o.value = i;
+    o.textContent = v.name + " (" + v.lang + ")";
+    voiceSel.appendChild(o);
+  });
+
+  const best = list.findIndex(v =>
+    /google uk english female/i.test(v.name) ||
+    /google uk english male/i.test(v.name)   ||
+    /google us english/i.test(v.name)        ||
+    /samantha/i.test(v.name) || /daniel/i.test(v.name)
+  );
+  voiceSel.selectedIndex = best >= 0 ? best : 0;
+  selVoice = list[voiceSel.selectedIndex];
+  voiceSel.onchange = () => { selVoice = list[parseInt(voiceSel.value)]; };
+}
+
+// Load voices — Chrome loads them asynchronously
+if (speechSynthesis.getVoices().length) {
+  fillVoices();
+} else {
+  speechSynthesis.addEventListener("voiceschanged", fillVoices, { once: false });
+  // Chrome sometimes needs a small delay on first load
+  setTimeout(fillVoices, 500);
+  setTimeout(fillVoices, 1500);
+}
+
+function speakCurrent() {
+  if (!window.speechSynthesis) return;
+  const text = CARDS[current].speak;
+  speechSynthesis.cancel();
+  // Double rAF: known Chrome fix — lets cancel() settle before speak()
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang  = "en-US";
+    u.rate  = 0.85;
+    u.pitch = 1.05;
+    if (selVoice) u.voice = selVoice;
+    speechSynthesis.speak(u);
+  }));
+}
+
+/* ── Viewer ── */
+let current = 0;
+
+const imgBox   = document.getElementById("img-box");
+const wordEl   = document.getElementById("card-word");
+const colorBar = document.getElementById("color-bar");
+const counter  = document.getElementById("counter");
+const btnPrev  = document.getElementById("btn-prev");
+const btnNext  = document.getElementById("btn-next");
+const speakBtn = document.getElementById("speak-btn");
+
+function showCard(i) {
+  const c = CARDS[i];
+  wordEl.textContent = c.word;
+  colorBar.style.background = c.color;
+  speakBtn.style.borderColor = c.color;
+  speakBtn.style.color = c.color;
+  counter.textContent = (i + 1) + " / " + CARDS.length;
+  btnPrev.disabled = i === 0;
+  btnNext.disabled = i === CARDS.length - 1;
+  const pm = document.getElementById("btn-prev-m");
+  const nm = document.getElementById("btn-next-m");
+  if (pm) pm.disabled = i === 0;
+  if (nm) nm.disabled = i === CARDS.length - 1;
+
+  imgBox.innerHTML = "";
+  const url = imgUrls[i];
+  if (url) {
+    const img = document.createElement("img");
+    img.src = url; img.alt = c.word;
+    imgBox.appendChild(img);
+  } else {
+    const sp = document.createElement("div");
+    sp.className = "spin";
+    imgBox.appendChild(sp);
+  }
+}
+
+function nextCard() { if (current < CARDS.length - 1) showCard(++current); }
+function prevCard() { if (current > 0) showCard(--current); }
+
+document.addEventListener("keydown", e => {
+  if      (e.key === "ArrowRight")            nextCard();
+  else if (e.key === "ArrowLeft")             prevCard();
+  else if (e.key === "s" || e.key === "S")    speakCurrent();
+});
+
+/* ── Print ── */
+function buildPrint() {
+  const layout = document.getElementById("print-layout");
+  layout.innerHTML = "";
+
+  for (let i = 0; i < CARDS.length; i += 4) {
+    const page = document.createElement("div");
+    page.className = "print-page";
+
+    for (let j = i; j < Math.min(i + 4, CARDS.length); j++) {
+      const c   = CARDS[j];
+      const url = imgUrls[j];
+
+      const pcard = document.createElement("div");
+      pcard.className = "pcard";
+
+      const bar = document.createElement("div");
+      bar.className = "pcard-bar";
+      bar.style.background = c.color;
+      pcard.appendChild(bar);
+
+      if (url) {
+        const img = document.createElement("img");
+        img.src = url; img.alt = c.word;
+        pcard.appendChild(img);
+      }
+
+      const wrd = document.createElement("div");
+      wrd.className = "pcard-word";
+      wrd.style.color = c.color;
+      wrd.textContent = c.word;
+      pcard.appendChild(wrd);
+
+      page.appendChild(pcard);
+    }
+    layout.appendChild(page);
+  }
+}
+
+/* ── Init ── */
+loadAllImages();
+</script>
+</body>
+</html>
