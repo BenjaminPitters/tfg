@@ -181,9 +181,16 @@ tr:hover td{background:var(--bg)}
 .mat a:hover{text-decoration:underline}
 
 /* research */
-.res-card{margin-top:30px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;box-shadow:var(--shadow)}
+.res-card{margin-top:30px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;box-shadow:var(--shadow);
+  display:grid;grid-template-columns:1.15fr .85fr;gap:30px;align-items:center}
 .res-card p{font-size:14px;color:var(--text2);font-weight:300;max-width:720px}
 .res-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.res-facts{background:linear-gradient(150deg,var(--n1l),var(--n4l));border-radius:var(--radius);padding:22px 24px;display:flex;flex-direction:column;gap:16px}
+.res-facts .rf{display:flex;gap:12px;align-items:flex-start}
+.res-facts .rf .ic{font-size:20px;line-height:1.3}
+.res-facts .rf b{display:block;font-size:13px;font-weight:600;color:var(--text)}
+.res-facts .rf span{display:block;font-size:12px;color:var(--text2);font-weight:300;line-height:1.5}
+@media(max-width:880px){.res-card{grid-template-columns:1fr;padding:24px 22px}}
 .res-links a{font-size:12.5px;font-weight:600;text-decoration:none;padding:9px 18px;border-radius:8px;border:1.5px solid var(--text);color:var(--text);transition:all .15s}
 .res-links a:hover{background:var(--text);color:#fff}
 
@@ -425,9 +432,16 @@ footer{border-top:1px solid var(--border);margin-top:30px;background:var(--surfa
   <span class="k k1">Research</span>
   <h2 class="sec-h">The question underneath all of it.</h2>
   <div class="res-card">
-    <p>Most education systems quietly exempt children with special educational needs from learning an additional language, often with no evidence behind the exemption. I am mapping that field in a pre-registered scoping review: how these children learn additional languages, across the whole spectrum of need and in several languages of publication. The protocol is public on the Open Science Framework, registered before any formal search was run.</p>
-    <div class="res-links">
-      <a href="https://osf.io/j2tva" target="_blank" rel="noopener">Registered protocol on OSF ↗</a>
+    <div>
+      <p>Most education systems quietly exempt children with special educational needs from learning an additional language, often with no evidence behind the exemption. I am mapping that field in a pre-registered scoping review: how these children learn additional languages, across the whole spectrum of need and in several languages of publication. The protocol is public on the Open Science Framework, registered before any formal search was run.</p>
+      <div class="res-links">
+        <a href="https://osf.io/j2tva" target="_blank" rel="noopener">Registered protocol on OSF ↗</a>
+      </div>
+    </div>
+    <div class="res-facts">
+      <div class="rf"><span class="ic">📋</span><div><b>Pre-registered</b><span>The protocol was public on OSF before any formal search was run.</span></div></div>
+      <div class="rf"><span class="ic">🧩</span><div><b>The whole spectrum of need</b><span>Not one diagnosis: the review covers the full range of special educational needs.</span></div></div>
+      <div class="rf"><span class="ic">🌍</span><div><b>Several languages of publication</b><span>The search goes beyond studies published in English.</span></div></div>
     </div>
   </div>
 </section>
